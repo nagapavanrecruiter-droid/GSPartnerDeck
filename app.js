@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
   loadPartners();
   setupNavigation();
   document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
-  document.getElementById('configBtn').addEventListener('click', () => openModal('configModal'));
 
   // Close modals on overlay click
   document.querySelectorAll('.modal-overlay').forEach(el => {
@@ -36,6 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       document.querySelectorAll('.modal-overlay:not(.hidden)').forEach(m => closeModal(m.id));
+    }
+    // Secret admin shortcut: Ctrl + Shift + G opens GitHub Config
+    if (e.ctrlKey && e.shiftKey && e.key === 'G') {
+      e.preventDefault();
+      openModal('configModal');
     }
   });
 });
@@ -905,48 +909,5 @@ function setSyncStatus(state, text) {
 // SAMPLE DATA (fallback when no GitHub & no local file)
 // ============================================================
 function getSampleData() {
-  return [
-    {
-      id: '1', employee: 'Pavan', company: 'Cisco Systems', contact: 'John Smith',
-      email: 'john@cisco.com', technologies: ['Networking', 'Security', 'Cloud'],
-      status: 'Active', createdAt: '2024-01-15',
-      capabilityStatement: {
-        overview: 'Global leader in networking technology.',
-        coreCompetencies: ['Network Infrastructure', 'Cybersecurity'],
-        services: ['Managed Services', 'Professional Services'],
-        industries: 'Finance, Healthcare, Government',
-        differentiators: 'Industry-leading hardware and software.',
-        pastPerformance: 'Fortune 500 deployments worldwide.',
-        certifications: 'ISO 27001, FedRAMP'
-      }
-    },
-    {
-      id: '2', employee: 'Sai', company: 'Palo Alto Networks', contact: 'Rachel Kim',
-      email: 'rachel@paloalto.com', technologies: ['Cybersecurity', 'Zero Trust'],
-      status: 'Active', createdAt: '2024-02-03',
-      capabilityStatement: {
-        overview: 'Global cybersecurity leader.',
-        coreCompetencies: ['Next-Gen Firewalls', 'Cloud Security'],
-        services: ['Threat Intelligence', 'Incident Response'],
-        industries: 'Financial Services, Healthcare',
-        differentiators: 'AI/ML-driven security.',
-        pastPerformance: 'Protecting 70,000+ organizations.',
-        certifications: 'FedRAMP High, FIPS 140-2'
-      }
-    },
-    {
-      id: '3', employee: 'Hanu', company: 'Microsoft Azure', contact: 'David Chen',
-      email: 'david@microsoft.com', technologies: ['Cloud', 'AI/ML', 'DevOps'],
-      status: 'In Discussion', createdAt: '2024-02-20',
-      capabilityStatement: {
-        overview: 'Comprehensive cloud platform.',
-        coreCompetencies: ['Cloud Infrastructure', 'AI & Machine Learning'],
-        services: ['IaaS', 'PaaS', 'SaaS'],
-        industries: 'All industries',
-        differentiators: 'Deep Microsoft 365 integration.',
-        pastPerformance: 'Millions of businesses globally.',
-        certifications: 'FedRAMP High, ISO 27001'
-      }
-    }
-  ];
+  return [];
 }
