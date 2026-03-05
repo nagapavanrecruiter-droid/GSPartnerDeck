@@ -1,0 +1,116 @@
+[
+  {
+    "id": "1",
+    "employee": "Pavan",
+    "company": "Cisco Systems",
+    "contact": "John Smith",
+    "email": "john.smith@cisco.com",
+    "technologies": ["Networking", "Security", "Cloud"],
+    "status": "Active",
+    "createdAt": "2024-01-15",
+    "capabilityStatement": {
+      "overview": "Cisco Systems is a global leader in networking technology, providing enterprise-grade solutions for businesses of all sizes.",
+      "coreCompetencies": ["Network Infrastructure", "Cybersecurity", "Collaboration Tools", "Cloud Solutions"],
+      "services": ["Managed Services", "Professional Services", "Technical Support", "Training"],
+      "industries": "Finance, Healthcare, Government, Retail, Manufacturing",
+      "differentiators": "Industry-leading hardware combined with intelligent software platforms and a global support network.",
+      "pastPerformance": "Successfully deployed secure network infrastructure for Fortune 500 companies across 15+ industries.",
+      "certifications": "ISO 27001, SOC 2 Type II, FedRAMP Authorized"
+    }
+  },
+  {
+    "id": "2",
+    "employee": "Sai",
+    "company": "Palo Alto Networks",
+    "contact": "Rachel Kim",
+    "email": "rachel.kim@paloalto.com",
+    "technologies": ["Cybersecurity", "Zero Trust", "SIEM"],
+    "status": "Active",
+    "createdAt": "2024-02-03",
+    "capabilityStatement": {
+      "overview": "Palo Alto Networks is a global cybersecurity leader delivering best-in-class prevention-first security outcomes.",
+      "coreCompetencies": ["Next-Gen Firewalls", "Cloud Security", "AI-Powered Threat Detection"],
+      "services": ["Threat Intelligence", "Incident Response", "Security Consulting"],
+      "industries": "Financial Services, Healthcare, Critical Infrastructure",
+      "differentiators": "AI/ML-driven security that stops threats before they execute, with zero-day protection.",
+      "pastPerformance": "Protected 70,000+ organizations worldwide against advanced cyber threats.",
+      "certifications": "Common Criteria, FIPS 140-2, FedRAMP High"
+    }
+  },
+  {
+    "id": "3",
+    "employee": "Hanu",
+    "company": "Microsoft Azure",
+    "contact": "David Chen",
+    "email": "david.chen@microsoft.com",
+    "technologies": ["Cloud", "AI/ML", "DevOps", "Azure"],
+    "status": "In Discussion",
+    "createdAt": "2024-02-20",
+    "capabilityStatement": {
+      "overview": "Microsoft Azure is a comprehensive cloud platform offering over 200 products and services.",
+      "coreCompetencies": ["Cloud Infrastructure", "AI & Machine Learning", "Data Analytics", "Developer Tools"],
+      "services": ["IaaS", "PaaS", "SaaS", "Hybrid Cloud"],
+      "industries": "All industries including Government, Healthcare, Finance, Retail",
+      "differentiators": "Deep integration with Microsoft 365, hybrid cloud capabilities, and enterprise compliance.",
+      "pastPerformance": "Serving millions of businesses globally with 99.99% SLA guarantees.",
+      "certifications": "ISO 27001, SOC 1/2/3, FedRAMP High, DoD IL2/IL4/IL5"
+    }
+  },
+  {
+    "id": "4",
+    "employee": "Pavan",
+    "company": "ServiceNow",
+    "contact": "Lisa Johnson",
+    "email": "lisa.j@servicenow.com",
+    "technologies": ["ITSM", "Automation", "Workflow"],
+    "status": "Submitted",
+    "createdAt": "2024-03-05",
+    "capabilityStatement": {
+      "overview": "ServiceNow transforms how work gets done, making the world of work, work better for people.",
+      "coreCompetencies": ["IT Service Management", "Business Process Automation", "Employee Experience"],
+      "services": ["Platform Implementation", "Integration Services", "Custom App Development"],
+      "industries": "Enterprise, Healthcare, Financial Services, Government",
+      "differentiators": "Single platform connecting people, functions, and systems across the enterprise.",
+      "pastPerformance": "Trusted by 85% of Fortune 500 companies for critical business workflows.",
+      "certifications": "ISO 27001, SOC 2, FedRAMP Moderate, TX-RAMP"
+    }
+  },
+  {
+    "id": "5",
+    "employee": "Sai",
+    "company": "Snowflake",
+    "contact": "Mark Torres",
+    "email": "m.torres@snowflake.com",
+    "technologies": ["Data Warehouse", "Analytics", "Cloud"],
+    "status": "In Discussion",
+    "createdAt": "2024-03-18",
+    "capabilityStatement": {
+      "overview": "Snowflake delivers the AI Data Cloud, enabling organizations to unite siloed data and run diverse workloads.",
+      "coreCompetencies": ["Cloud Data Warehousing", "Data Sharing", "AI/ML on Data", "Data Governance"],
+      "services": ["Data Engineering", "Analytics Platforms", "Secure Data Collaboration"],
+      "industries": "Retail, Healthcare, Financial Services, Media, Technology",
+      "differentiators": "Single platform for all data workloads with near-unlimited scalability and instant elasticity.",
+      "pastPerformance": "Enabling 9,000+ organizations to mobilize data with the Snowflake Data Cloud.",
+      "certifications": "SOC 2 Type II, ISO 27001, HIPAA, FedRAMP Moderate"
+    }
+  },
+  {
+    "id": "6",
+    "employee": "Hanu",
+    "company": "Splunk",
+    "contact": "Anna White",
+    "email": "anna.white@splunk.com",
+    "technologies": ["SIEM", "Observability", "Security"],
+    "status": "Not Qualified",
+    "createdAt": "2024-04-01",
+    "capabilityStatement": {
+      "overview": "Splunk turns data into doing with a unified security and observability platform.",
+      "coreCompetencies": ["Security Information & Event Management", "IT Operations", "Application Performance"],
+      "services": ["Security Analytics", "Log Management", "DevOps Monitoring"],
+      "industries": "Technology, Finance, Healthcare, Government",
+      "differentiators": "Unified platform for both security and observability with powerful search and analysis.",
+      "pastPerformance": "Trusted by over 15,000 organizations globally for mission-critical operations.",
+      "certifications": "SOC 2, ISO 27001, FedRAMP Moderate"
+    }
+  }
+]

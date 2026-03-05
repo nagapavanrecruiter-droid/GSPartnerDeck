@@ -1,0 +1,952 @@
+/* ============================================================
+   PartnerHub — app.js
+   Full application logic: GitHub API, CRUD, UI, Search, Export
+   ============================================================ */
+
+'use strict';
+
+// ============================================================
+// STATE
+// ============================================================
+let partners = [];
+let filteredPartners = [];
+let githubConfig = { token: '', owner: '', repo: '', branch: 'main' };
+let currentDeleteId = null;
+let currentEditId = null;
+let fileSha = null; // GitHub file SHA for updates
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  loadConfig();
+  loadPartners();
+  setupNavigation();
+  document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+  document.getElementById('configBtn').addEventListener('click', () => openModal('configModal'));
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (e.target === el) closeModal(el.id);
+    });
+  });
+
+  // Keyboard shortcut: ESC closes any open modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay:not(.hidden)').forEach(m => closeModal(m.id));
+    }
+  });
+});
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function setupNavigation() {
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const page = item.getAttribute('data-page');
+      navigate(page);
+      closeSidebar();
+    });
+  });
+}
+
+function navigate(page) {
+  // Update nav
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navItem = document.querySelector(`[data-page="${page}"]`);
+  if (navItem) navItem.classList.add('active');
+
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+
+  // Show target page
+  const target = document.getElementById(`page-${page}`);
+  if (target) target.classList.remove('hidden');
+
+  // Update breadcrumb
+  const labels = {
+    dashboard: 'Dashboard',
+    analytics: 'Employee Analytics',
+    database: 'Partner Database',
+    add: 'Add Partner'
+  };
+  document.getElementById('pageBreadcrumb').textContent = labels[page] || page;
+
+  // Render page-specific content
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'analytics') renderAnalytics();
+  if (page === 'database') renderTable(partners);
+  if (page === 'add') clearAddForm();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+// ============================================================
+// GITHUB CONFIG
+// ============================================================
+function loadConfig() {
+  const saved = sessionStorage.getItem('ph_config');
+  if (saved) {
+    try {
+      githubConfig = JSON.parse(saved);
+    } catch (e) {}
+  }
+  // Pre-fill config modal
+  document.getElementById('cfg-token').value = githubConfig.token || '';
+  document.getElementById('cfg-owner').value = githubConfig.owner || '';
+  document.getElementById('cfg-repo').value = githubConfig.repo || '';
+  document.getElementById('cfg-branch').value = githubConfig.branch || 'main';
+}
+
+function saveConfig() {
+  const token = document.getElementById('cfg-token').value.trim();
+  const owner = document.getElementById('cfg-owner').value.trim();
+  const repo = document.getElementById('cfg-repo').value.trim();
+  const branch = document.getElementById('cfg-branch').value.trim() || 'main';
+
+  if (!token || !owner || !repo) {
+    showConfigStatus('error', 'Please fill in all required fields.');
+    return;
+  }
+
+  githubConfig = { token, owner, repo, branch };
+  sessionStorage.setItem('ph_config', JSON.stringify(githubConfig));
+
+  showConfigStatus('success', 'Saved! Testing connection...');
+  testGitHubConnection();
+}
+
+async function testGitHubConnection() {
+  try {
+    const resp = await fetch(`https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}`, {
+      headers: { Authorization: `Bearer ${githubConfig.token}` }
+    });
+    if (resp.ok) {
+      showConfigStatus('success', '✓ Connected successfully! Loading partners...');
+      setTimeout(() => closeModal('configModal'), 1200);
+      loadPartners();
+    } else {
+      showConfigStatus('error', `Connection failed: ${resp.status} ${resp.statusText}`);
+    }
+  } catch (e) {
+    showConfigStatus('error', `Error: ${e.message}`);
+  }
+}
+
+function showConfigStatus(type, message) {
+  const el = document.getElementById('configStatus');
+  el.textContent = message;
+  el.className = `config-status ${type}`;
+}
+
+// ============================================================
+// DATA LOADING
+// ============================================================
+async function loadPartners() {
+  if (githubConfig.token && githubConfig.owner && githubConfig.repo) {
+    await loadFromGitHub();
+  } else {
+    // Try to load from local data/partners.json (fallback for dev)
+    await loadFromLocal();
+  }
+  renderAll();
+}
+
+async function loadFromGitHub() {
+  setSyncStatus('loading', 'Syncing...');
+  try {
+    const resp = await fetch(
+      `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data/partners.json?ref=${githubConfig.branch}&t=${Date.now()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${githubConfig.token}`,
+          Accept: 'application/vnd.github.v3+json'
+        }
+      }
+    );
+
+    if (resp.ok) {
+      const data = await resp.json();
+      fileSha = data.sha;
+      const decoded = atob(data.content.replace(/\n/g, ''));
+      partners = JSON.parse(decoded);
+      setSyncStatus('connected', 'Connected');
+      updateNavBadge();
+    } else if (resp.status === 404) {
+      // File doesn't exist yet, initialize it
+      partners = [];
+      await saveToGitHub('Initialize partner database', true);
+      setSyncStatus('connected', 'Initialized');
+    } else {
+      throw new Error(`HTTP ${resp.status}`);
+    }
+  } catch (e) {
+    console.error('GitHub load error:', e);
+    setSyncStatus('error', 'Sync error');
+    showToast('⚠️ Could not load from GitHub. Using local data.', 'warning');
+    await loadFromLocal();
+  }
+}
+
+async function loadFromLocal() {
+  try {
+    const resp = await fetch('data/partners.json?t=' + Date.now());
+    if (resp.ok) {
+      partners = await resp.json();
+    } else {
+      partners = [];
+    }
+  } catch {
+    partners = getSampleData();
+  }
+  updateNavBadge();
+}
+
+// ============================================================
+// GITHUB SAVE
+// ============================================================
+async function saveToGitHub(message = 'Update partners', isInit = false) {
+  if (!githubConfig.token || !githubConfig.owner || !githubConfig.repo) {
+    showToast('⚠️ GitHub not configured. Data saved locally only.', 'warning');
+    return false;
+  }
+
+  showLoading('Syncing with GitHub...');
+  try {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(partners, null, 2))));
+    const body = {
+      message,
+      content,
+      branch: githubConfig.branch
+    };
+    if (fileSha) body.sha = fileSha;
+
+    const resp = await fetch(
+      `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data/partners.json`,
+      {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${githubConfig.token}`,
+          Accept: 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      }
+    );
+
+    if (resp.ok) {
+      const data = await resp.json();
+      fileSha = data.content.sha;
+      hideLoading();
+      setSyncStatus('connected', 'Saved');
+      return true;
+    } else {
+      const err = await resp.json();
+      throw new Error(err.message || `HTTP ${resp.status}`);
+    }
+  } catch (e) {
+    hideLoading();
+    setSyncStatus('error', 'Save failed');
+    showToast(`❌ GitHub save failed: ${e.message}`, 'error');
+    return false;
+  }
+}
+
+// ============================================================
+// CRUD OPERATIONS
+// ============================================================
+async function addPartner() {
+  const employee = document.getElementById('f-employee').value.trim();
+  const company = document.getElementById('f-company').value.trim();
+  const status = document.getElementById('f-status').value;
+
+  if (!employee || !company || !status) {
+    showToast('⚠️ Please fill in required fields (Employee, Company, Status)', 'warning');
+    return;
+  }
+
+  const techRaw = document.getElementById('f-technologies').value;
+  const technologies = techRaw.split(',').map(t => t.trim()).filter(Boolean);
+  const competencies = document.getElementById('f-competencies').value.split(',').map(t => t.trim()).filter(Boolean);
+  const services = document.getElementById('f-services').value.split(',').map(t => t.trim()).filter(Boolean);
+
+  const partner = {
+    id: Date.now().toString(),
+    employee,
+    company,
+    contact: document.getElementById('f-contact').value.trim(),
+    email: document.getElementById('f-email').value.trim(),
+    technologies,
+    status,
+    createdAt: new Date().toISOString().split('T')[0],
+    capabilityStatement: {
+      overview: document.getElementById('f-overview').value.trim(),
+      coreCompetencies: competencies,
+      services: services,
+      industries: document.getElementById('f-industries').value.trim(),
+      differentiators: document.getElementById('f-differentiators').value.trim(),
+      pastPerformance: document.getElementById('f-pastPerformance').value.trim(),
+      certifications: document.getElementById('f-certifications').value.trim()
+    }
+  };
+
+  partners.unshift(partner);
+  const saved = await saveToGitHub(`Add partner: ${company}`);
+  if (saved || !githubConfig.token) {
+    showToast(`✓ ${company} added successfully`, 'success');
+    clearAddForm();
+    renderAll();
+    navigate('database');
+  } else {
+    // Rollback if save failed
+    partners.shift();
+  }
+  hideLoading();
+}
+
+function openDeleteModal(id) {
+  const partner = partners.find(p => p.id === id);
+  if (!partner) return;
+  currentDeleteId = id;
+  document.getElementById('deletePartnerName').textContent = partner.company;
+  document.getElementById('confirmDeleteBtn').onclick = () => confirmDelete(id);
+  openModal('deleteModal');
+}
+
+async function confirmDelete(id) {
+  const partner = partners.find(p => p.id === id);
+  if (!partner) return;
+
+  const oldPartners = [...partners];
+  partners = partners.filter(p => p.id !== id);
+  closeModal('deleteModal');
+
+  const saved = await saveToGitHub(`Delete partner: ${partner.company}`);
+  if (saved || !githubConfig.token) {
+    showToast(`✓ ${partner.company} deleted`, 'success');
+    renderAll();
+  } else {
+    // Rollback
+    partners = oldPartners;
+    renderAll();
+  }
+  hideLoading();
+}
+
+function openEditModal(id) {
+  const partner = partners.find(p => p.id === id);
+  if (!partner) return;
+  currentEditId = id;
+
+  const cap = partner.capabilityStatement || {};
+  const body = document.getElementById('editModalBody');
+
+  body.innerHTML = `
+    <div class="edit-form-section">
+      <div class="edit-section-label">Partner Information</div>
+      <div class="edit-form-grid">
+        <div class="form-group">
+          <label class="form-label">Employee Name <span class="required">*</span></label>
+          <input type="text" id="e-employee" class="form-input" value="${esc(partner.employee)}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company Name <span class="required">*</span></label>
+          <input type="text" id="e-company" class="form-input" value="${esc(partner.company)}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contact Person</label>
+          <input type="text" id="e-contact" class="form-input" value="${esc(partner.contact || '')}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="e-email" class="form-input" value="${esc(partner.email || '')}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Technologies <span class="form-hint">(comma separated)</span></label>
+          <input type="text" id="e-technologies" class="form-input" value="${esc((partner.technologies || []).join(', '))}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Partner Status <span class="required">*</span></label>
+          <select id="e-status" class="form-input form-select">
+            <option value="Active" ${partner.status === 'Active' ? 'selected' : ''}>Active</option>
+            <option value="In Discussion" ${partner.status === 'In Discussion' ? 'selected' : ''}>In Discussion</option>
+            <option value="Submitted" ${partner.status === 'Submitted' ? 'selected' : ''}>Submitted</option>
+            <option value="Not Qualified" ${partner.status === 'Not Qualified' ? 'selected' : ''}>Not Qualified</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="edit-form-section">
+      <div class="edit-section-label">Capability Statement</div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">Company Overview</label>
+        <textarea id="e-overview" class="form-textarea" rows="3">${esc(cap.overview || '')}</textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">Core Competencies <span class="form-hint">(comma separated)</span></label>
+        <input type="text" id="e-competencies" class="form-input" value="${esc((cap.coreCompetencies || []).join(', '))}" />
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">Relevant Services <span class="form-hint">(comma separated)</span></label>
+        <input type="text" id="e-services" class="form-input" value="${esc((cap.services || []).join(', '))}" />
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">Industries Served</label>
+        <input type="text" id="e-industries" class="form-input" value="${esc(cap.industries || '')}" />
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">Differentiators</label>
+        <textarea id="e-differentiators" class="form-textarea" rows="2">${esc(cap.differentiators || '')}</textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">Past Performance</label>
+        <textarea id="e-pastPerformance" class="form-textarea" rows="2">${esc(cap.pastPerformance || '')}</textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Certifications / Compliance</label>
+        <input type="text" id="e-certifications" class="form-input" value="${esc(cap.certifications || '')}" />
+      </div>
+    </div>
+  `;
+
+  document.getElementById('saveEditBtn').onclick = () => saveEdit(id);
+  openModal('editModal');
+}
+
+async function saveEdit(id) {
+  const idx = partners.findIndex(p => p.id === id);
+  if (idx === -1) return;
+
+  const employee = document.getElementById('e-employee').value.trim();
+  const company = document.getElementById('e-company').value.trim();
+  const status = document.getElementById('e-status').value;
+
+  if (!employee || !company || !status) {
+    showToast('⚠️ Please fill required fields', 'warning');
+    return;
+  }
+
+  const oldPartner = { ...partners[idx] };
+  const technologies = document.getElementById('e-technologies').value.split(',').map(t => t.trim()).filter(Boolean);
+  const competencies = document.getElementById('e-competencies').value.split(',').map(t => t.trim()).filter(Boolean);
+  const services = document.getElementById('e-services').value.split(',').map(t => t.trim()).filter(Boolean);
+
+  partners[idx] = {
+    ...partners[idx],
+    employee, company, status,
+    contact: document.getElementById('e-contact').value.trim(),
+    email: document.getElementById('e-email').value.trim(),
+    technologies,
+    capabilityStatement: {
+      overview: document.getElementById('e-overview').value.trim(),
+      coreCompetencies: competencies,
+      services: services,
+      industries: document.getElementById('e-industries').value.trim(),
+      differentiators: document.getElementById('e-differentiators').value.trim(),
+      pastPerformance: document.getElementById('e-pastPerformance').value.trim(),
+      certifications: document.getElementById('e-certifications').value.trim()
+    }
+  };
+
+  closeModal('editModal');
+  const saved = await saveToGitHub(`Update partner: ${company}`);
+
+  if (saved || !githubConfig.token) {
+    showToast(`✓ ${company} updated successfully`, 'success');
+    renderAll();
+  } else {
+    partners[idx] = oldPartner;
+    renderAll();
+  }
+  hideLoading();
+}
+
+function openViewModal(id) {
+  const partner = partners.find(p => p.id === id);
+  if (!partner) return;
+  const cap = partner.capabilityStatement || {};
+
+  document.getElementById('viewModalTitle').textContent = partner.company;
+
+  const tagsHtml = (partner.technologies || []).map(t => `<span class="tag">${esc(t)}</span>`).join('');
+  const compHtml = (cap.coreCompetencies || []).map(c => `<span class="tag">${esc(c)}</span>`).join('');
+  const svcHtml = (cap.services || []).map(s => `<span class="tag" style="background:#f5f3ff;color:#7c3aed;border-color:rgba(139,92,246,0.2)">${esc(s)}</span>`).join('');
+
+  document.getElementById('viewModalBody').innerHTML = `
+    <div class="detail-header">
+      <div class="detail-avatar">${partner.company.charAt(0)}</div>
+      <div>
+        <div class="detail-company-name">${esc(partner.company)}</div>
+        <div class="detail-meta">
+          ${esc(partner.contact || 'No contact')} &nbsp;·&nbsp;
+          ${esc(partner.email || 'No email')} &nbsp;·&nbsp;
+          ${statusBadge(partner.status)}
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Partner Details</div>
+      <div class="detail-grid">
+        <div class="detail-field"><div class="detail-field-label">Sourced By</div><div class="detail-field-value">${esc(partner.employee)}</div></div>
+        <div class="detail-field"><div class="detail-field-label">Status</div><div class="detail-field-value">${statusBadge(partner.status)}</div></div>
+        <div class="detail-field"><div class="detail-field-label">Added On</div><div class="detail-field-value">${formatDate(partner.createdAt)}</div></div>
+        <div class="detail-field"><div class="detail-field-label">Contact Email</div><div class="detail-field-value">${partner.email ? `<a href="mailto:${esc(partner.email)}" style="color:var(--accent-dark)">${esc(partner.email)}</a>` : '—'}</div></div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Technologies</div>
+      <div class="tech-tags">${tagsHtml || '<span style="color:var(--text-muted);font-size:0.8rem">None listed</span>'}</div>
+    </div>
+
+    ${cap.overview ? `
+    <div class="detail-section">
+      <div class="detail-section-title">Capability Statement</div>
+      <div class="cap-section"><div class="cap-label">Company Overview</div><div class="cap-value">${esc(cap.overview)}</div></div>
+      ${cap.coreCompetencies && cap.coreCompetencies.length ? `<div class="cap-section"><div class="cap-label">Core Competencies</div><div class="tech-tags" style="margin-top:4px">${compHtml}</div></div>` : ''}
+      ${cap.services && cap.services.length ? `<div class="cap-section"><div class="cap-label">Services</div><div class="tech-tags" style="margin-top:4px">${svcHtml}</div></div>` : ''}
+      ${cap.industries ? `<div class="cap-section"><div class="cap-label">Industries Served</div><div class="cap-value">${esc(cap.industries)}</div></div>` : ''}
+      ${cap.differentiators ? `<div class="cap-section"><div class="cap-label">Differentiators</div><div class="cap-value">${esc(cap.differentiators)}</div></div>` : ''}
+      ${cap.pastPerformance ? `<div class="cap-section"><div class="cap-label">Past Performance</div><div class="cap-value">${esc(cap.pastPerformance)}</div></div>` : ''}
+      ${cap.certifications ? `<div class="cap-section"><div class="cap-label">Certifications</div><div class="cap-value">${esc(cap.certifications)}</div></div>` : ''}
+    </div>` : ''}
+  `;
+
+  document.getElementById('viewEditBtn').onclick = () => {
+    closeModal('viewModal');
+    openEditModal(id);
+  };
+
+  openModal('viewModal');
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderAll() {
+  updateNavBadge();
+  const currentPage = getCurrentPage();
+  if (currentPage === 'dashboard') renderDashboard();
+  if (currentPage === 'analytics') renderAnalytics();
+  if (currentPage === 'database') renderTable(partners);
+}
+
+function getCurrentPage() {
+  const pages = ['dashboard', 'analytics', 'database', 'add'];
+  for (const p of pages) {
+    const el = document.getElementById(`page-${p}`);
+    if (el && !el.classList.contains('hidden')) return p;
+  }
+  return 'dashboard';
+}
+
+function updateNavBadge() {
+  document.getElementById('nav-partner-count').textContent = partners.length;
+}
+
+function renderDashboard() {
+  const counts = getStatusCounts();
+  animateNumber('stat-total', partners.length);
+  animateNumber('stat-active', counts['Active'] || 0);
+  animateNumber('stat-discussion', counts['In Discussion'] || 0);
+  animateNumber('stat-submitted', counts['Submitted'] || 0);
+  animateNumber('stat-nq', counts['Not Qualified'] || 0);
+
+  renderRecentPartners();
+  renderTopTechnologies();
+}
+
+function renderRecentPartners() {
+  const recent = [...partners].slice(0, 6);
+  const container = document.getElementById('recentPartners');
+  if (!recent.length) {
+    container.innerHTML = `<div class="empty-state" style="padding:30px"><p>No partners yet</p></div>`;
+    return;
+  }
+  container.innerHTML = recent.map(p => `
+    <div class="recent-item" onclick="openViewModal('${p.id}')">
+      <div class="recent-avatar">${p.company.charAt(0)}</div>
+      <div class="recent-info">
+        <div class="recent-company">${esc(p.company)}</div>
+        <div class="recent-employee">by ${esc(p.employee)}</div>
+      </div>
+      ${statusBadge(p.status)}
+    </div>
+  `).join('');
+}
+
+function renderTopTechnologies() {
+  const techCount = {};
+  partners.forEach(p => (p.technologies || []).forEach(t => {
+    techCount[t] = (techCount[t] || 0) + 1;
+  }));
+
+  const sorted = Object.entries(techCount).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const max = sorted[0]?.[1] || 1;
+  const container = document.getElementById('topTechnologies');
+
+  if (!sorted.length) {
+    container.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:0.8rem">No technology data yet</div>`;
+    return;
+  }
+
+  container.innerHTML = sorted.map(([name, count]) => `
+    <div class="tech-bar-row">
+      <div class="tech-bar-name">${esc(name)}</div>
+      <div class="tech-bar-track">
+        <div class="tech-bar-fill" style="width: ${Math.round((count / max) * 100)}%"></div>
+      </div>
+      <div class="tech-bar-count">${count}</div>
+    </div>
+  `).join('');
+}
+
+function renderAnalytics() {
+  renderEmployeeAnalytics();
+  renderStatusBreakdown();
+}
+
+function renderEmployeeAnalytics() {
+  const empCount = {};
+  partners.forEach(p => {
+    empCount[p.employee] = (empCount[p.employee] || 0) + 1;
+  });
+  const sorted = Object.entries(empCount).sort((a, b) => b[1] - a[1]);
+  const max = sorted[0]?.[1] || 1;
+  const container = document.getElementById('employeeAnalytics');
+
+  if (!sorted.length) {
+    container.innerHTML = `<div style="color:var(--text-muted);font-size:0.8rem">No data yet.</div>`;
+    return;
+  }
+
+  container.innerHTML = sorted.map(([name, count]) => `
+    <div class="employee-card">
+      <div class="employee-card-top">
+        <div class="employee-avatar">${name.charAt(0).toUpperCase()}</div>
+        <div>
+          <div class="employee-name">${esc(name)}</div>
+          <div class="employee-count">${count} partner${count !== 1 ? 's' : ''} sourced</div>
+        </div>
+      </div>
+      <div class="employee-bar-track">
+        <div class="employee-bar-fill" style="width:${Math.round((count / max) * 100)}%"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderStatusBreakdown() {
+  const counts = getStatusCounts();
+  const statuses = [
+    { key: 'Active', bg: 'var(--green-light)', color: '#059669' },
+    { key: 'In Discussion', bg: 'var(--amber-light)', color: '#d97706' },
+    { key: 'Submitted', bg: 'var(--purple-light)', color: '#7c3aed' },
+    { key: 'Not Qualified', bg: 'var(--red-light)', color: '#dc2626' }
+  ];
+
+  document.getElementById('statusBreakdown').innerHTML = statuses.map(s => `
+    <div class="status-breakdown-card" style="background:${s.bg}">
+      <div class="status-breakdown-num" style="color:${s.color}">${counts[s.key] || 0}</div>
+      <div class="status-breakdown-label">${esc(s.key)}</div>
+    </div>
+  `).join('');
+}
+
+function renderTable(data) {
+  filteredPartners = data;
+  const tbody = document.getElementById('partnersTableBody');
+  const empty = document.getElementById('emptyState');
+  const count = document.getElementById('tableCount');
+
+  count.textContent = `${data.length} partner${data.length !== 1 ? 's' : ''}`;
+
+  if (!data.length) {
+    tbody.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+
+  empty.classList.add('hidden');
+  tbody.innerHTML = data.map(p => {
+    const tags = (p.technologies || []);
+    const visibleTags = tags.slice(0, 3);
+    const extra = tags.length - 3;
+    const tagHtml = visibleTags.map(t => `<span class="tag">${esc(t)}</span>`).join('') +
+      (extra > 0 ? `<span class="tag tag-overflow">+${extra}</span>` : '');
+
+    return `
+      <tr>
+        <td>
+          <div class="company-cell">
+            <div class="company-avatar">${p.company.charAt(0)}</div>
+            <div>
+              <div class="company-name">${esc(p.company)}</div>
+              <div class="company-email">${esc(p.contact || '')}</div>
+            </div>
+          </div>
+        </td>
+        <td><span style="font-weight:500">${esc(p.employee)}</span></td>
+        <td>${esc(p.email || '—')}</td>
+        <td><div class="tech-tags">${tagHtml || '—'}</div></td>
+        <td>${statusBadge(p.status)}</td>
+        <td style="color:var(--text-muted);white-space:nowrap">${formatDate(p.createdAt)}</td>
+        <td>
+          <div class="action-buttons">
+            <button class="btn-icon btn-icon-view" title="View" onclick="openViewModal('${p.id}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              View
+            </button>
+            <button class="btn-icon btn-icon-edit" title="Edit" onclick="openEditModal('${p.id}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit
+            </button>
+            <button class="btn-icon btn-icon-delete" title="Delete" onclick="openDeleteModal('${p.id}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+              Delete
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  // Populate employee filter
+  const employeeFilter = document.getElementById('employeeFilter');
+  const currentVal = employeeFilter.value;
+  const employees = [...new Set(partners.map(p => p.employee))].sort();
+  employeeFilter.innerHTML = `<option value="">All Employees</option>` +
+    employees.map(e => `<option value="${esc(e)}" ${currentVal === e ? 'selected' : ''}>${esc(e)}</option>`).join('');
+}
+
+// ============================================================
+// SEARCH & FILTER
+// ============================================================
+function filterPartners() {
+  const query = document.getElementById('searchInput').value.toLowerCase().trim();
+  const status = document.getElementById('statusFilter').value;
+  const employee = document.getElementById('employeeFilter').value;
+
+  let filtered = partners.filter(p => {
+    const cap = p.capabilityStatement || {};
+    const searchFields = [
+      p.company, p.employee, p.contact, p.email,
+      ...(p.technologies || []),
+      cap.overview, cap.industries, cap.differentiators,
+      cap.pastPerformance, cap.certifications,
+      ...(cap.coreCompetencies || []),
+      ...(cap.services || [])
+    ].filter(Boolean).join(' ').toLowerCase();
+
+    const matchQuery = !query || searchFields.includes(query);
+    const matchStatus = !status || p.status === status;
+    const matchEmployee = !employee || p.employee === employee;
+    return matchQuery && matchStatus && matchEmployee;
+  });
+
+  renderTable(filtered);
+}
+
+// ============================================================
+// CSV EXPORT
+// ============================================================
+function exportCSV() {
+  const headers = ['Employee', 'Company', 'Contact', 'Email', 'Technologies', 'Status', 'Added',
+    'Overview', 'Core Competencies', 'Services', 'Industries', 'Differentiators', 'Past Performance', 'Certifications'];
+
+  const rows = partners.map(p => {
+    const cap = p.capabilityStatement || {};
+    return [
+      p.employee, p.company, p.contact, p.email,
+      (p.technologies || []).join('; '),
+      p.status, p.createdAt,
+      cap.overview, (cap.coreCompetencies || []).join('; '),
+      (cap.services || []).join('; '),
+      cap.industries, cap.differentiators, cap.pastPerformance, cap.certifications
+    ].map(v => `"${(v || '').replace(/"/g, '""')}"`);
+  });
+
+  const csv = [headers.map(h => `"${h}"`), ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `partnerhub-export-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✓ CSV exported successfully', 'success');
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function getStatusCounts() {
+  return partners.reduce((acc, p) => {
+    acc[p.status] = (acc[p.status] || 0) + 1;
+    return acc;
+  }, {});
+}
+
+function statusBadge(status) {
+  const cls = (status || '').replace(/\s+/g, '-');
+  return `<span class="status-badge status-${cls}">${esc(status || 'Unknown')}</span>`;
+}
+
+function formatDate(str) {
+  if (!str) return '—';
+  try {
+    return new Date(str).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  } catch { return str; }
+}
+
+function esc(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
+function animateNumber(id, target) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const start = parseInt(el.textContent) || 0;
+  const duration = 600;
+  const startTime = performance.now();
+  const update = (now) => {
+    const t = Math.min((now - startTime) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(start + (target - start) * ease);
+    if (t < 1) requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+
+function clearAddForm() {
+  ['f-employee','f-company','f-contact','f-email','f-technologies',
+   'f-overview','f-competencies','f-services','f-industries',
+   'f-differentiators','f-pastPerformance','f-certifications'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const status = document.getElementById('f-status');
+  if (status) status.value = '';
+}
+
+// ============================================================
+// MODAL CONTROL
+// ============================================================
+function openModal(id) {
+  document.getElementById(id).classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+let toastTimeout;
+function showToast(message, type = 'success') {
+  clearTimeout(toastTimeout);
+  const toast = document.getElementById('toast');
+  const icons = { success: '✓', warning: '⚠', error: '✕', info: 'ℹ' };
+  const colors = { success: '#00d4aa', warning: '#f59e0b', error: '#ef4444', info: '#3b82f6' };
+
+  document.getElementById('toastMessage').textContent = message;
+  document.getElementById('toastIcon').textContent = icons[type] || '✓';
+  document.getElementById('toastIcon').style.color = colors[type];
+
+  toast.classList.remove('hidden');
+  toast.style.animation = 'slideInRight 0.3s ease';
+
+  toastTimeout = setTimeout(() => {
+    toast.style.animation = 'slideOutRight 0.3s ease forwards';
+    setTimeout(() => toast.classList.add('hidden'), 300);
+  }, 3500);
+}
+
+// ============================================================
+// LOADING
+// ============================================================
+function showLoading(text = 'Syncing...') {
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loadingOverlay').classList.remove('hidden');
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.add('hidden');
+}
+
+// ============================================================
+// SYNC STATUS
+// ============================================================
+function setSyncStatus(state, text) {
+  const dot = document.querySelector('.sync-dot');
+  const textEl = document.getElementById('syncText');
+  dot.className = 'sync-dot';
+  if (state === 'error') dot.classList.add('error');
+  if (state === 'warning') dot.classList.add('warning');
+  textEl.textContent = text;
+}
+
+// ============================================================
+// SAMPLE DATA (fallback when no GitHub & no local file)
+// ============================================================
+function getSampleData() {
+  return [
+    {
+      id: '1', employee: 'Pavan', company: 'Cisco Systems', contact: 'John Smith',
+      email: 'john@cisco.com', technologies: ['Networking', 'Security', 'Cloud'],
+      status: 'Active', createdAt: '2024-01-15',
+      capabilityStatement: {
+        overview: 'Global leader in networking technology.',
+        coreCompetencies: ['Network Infrastructure', 'Cybersecurity'],
+        services: ['Managed Services', 'Professional Services'],
+        industries: 'Finance, Healthcare, Government',
+        differentiators: 'Industry-leading hardware and software.',
+        pastPerformance: 'Fortune 500 deployments worldwide.',
+        certifications: 'ISO 27001, FedRAMP'
+      }
+    },
+    {
+      id: '2', employee: 'Sai', company: 'Palo Alto Networks', contact: 'Rachel Kim',
+      email: 'rachel@paloalto.com', technologies: ['Cybersecurity', 'Zero Trust'],
+      status: 'Active', createdAt: '2024-02-03',
+      capabilityStatement: {
+        overview: 'Global cybersecurity leader.',
+        coreCompetencies: ['Next-Gen Firewalls', 'Cloud Security'],
+        services: ['Threat Intelligence', 'Incident Response'],
+        industries: 'Financial Services, Healthcare',
+        differentiators: 'AI/ML-driven security.',
+        pastPerformance: 'Protecting 70,000+ organizations.',
+        certifications: 'FedRAMP High, FIPS 140-2'
+      }
+    },
+    {
+      id: '3', employee: 'Hanu', company: 'Microsoft Azure', contact: 'David Chen',
+      email: 'david@microsoft.com', technologies: ['Cloud', 'AI/ML', 'DevOps'],
+      status: 'In Discussion', createdAt: '2024-02-20',
+      capabilityStatement: {
+        overview: 'Comprehensive cloud platform.',
+        coreCompetencies: ['Cloud Infrastructure', 'AI & Machine Learning'],
+        services: ['IaaS', 'PaaS', 'SaaS'],
+        industries: 'All industries',
+        differentiators: 'Deep Microsoft 365 integration.',
+        pastPerformance: 'Millions of businesses globally.',
+        certifications: 'FedRAMP High, ISO 27001'
+      }
+    }
+  ];
+}

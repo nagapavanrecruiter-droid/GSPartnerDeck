@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GenSigma - Partner Management Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="assets/favicon.ico">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">
+      <img src="assets/favicon.ico" alt="Logo" width="52" height="52" style="object-fit:contain;border-radius:10px;" />
+    </div>
+    <span class="logo-text">GenSigma PartnerHub</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">OVERVIEW</div>
+    <a href="#" class="nav-item active" data-page="dashboard">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="#" class="nav-item" data-page="analytics">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Analytics
+    </a>
+
+    <div class="nav-section-label">PARTNERS</div>
+    <a href="#" class="nav-item" data-page="database">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      Partner Database
+      <span class="nav-badge" id="nav-partner-count">0</span>
+    </a>
+    <a href="#" class="nav-item" data-page="add">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Add Partner
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="github-config-btn" id="configBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      GitHub Config
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<div class="main-wrapper">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" id="sidebarToggle">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="page-breadcrumb" id="pageBreadcrumb">Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <div class="sync-status" id="syncStatus">
+        <span class="sync-dot"></span>
+        <span id="syncText">Connected</span>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="navigate('add')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Partner
+      </button>
+    </div>
+  </header>
+
+  <!-- PAGE CONTENT -->
+  <main class="content-area">
+
+    <!-- ======================== DASHBOARD PAGE ======================== -->
+    <section class="page" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-subtitle">Overview of your partner ecosystem</p>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="exportCSV()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card stat-total">
+          <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="stat-content">
+            <div class="stat-number" id="stat-total">0</div>
+            <div class="stat-label">Total Partners</div>
+          </div>
+          <div class="stat-trend up">↑ All time</div>
+        </div>
+        <div class="stat-card stat-active">
+          <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="stat-content">
+            <div class="stat-number" id="stat-active">0</div>
+            <div class="stat-label">Active</div>
+          </div>
+          <div class="stat-trend up">↑ Engaged</div>
+        </div>
+        <div class="stat-card stat-discussion">
+          <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div class="stat-content">
+            <div class="stat-number" id="stat-discussion">0</div>
+            <div class="stat-label">In Discussion</div>
+          </div>
+          <div class="stat-trend neutral">→ Pipeline</div>
+        </div>
+        <div class="stat-card stat-submitted">
+          <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+          <div class="stat-content">
+            <div class="stat-number" id="stat-submitted">0</div>
+            <div class="stat-label">Submitted</div>
+          </div>
+          <div class="stat-trend up">↑ Proposals</div>
+        </div>
+        <div class="stat-card stat-nq">
+          <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+          <div class="stat-content">
+            <div class="stat-number" id="stat-nq">0</div>
+            <div class="stat-label">Not Qualified</div>
+          </div>
+          <div class="stat-trend down">↓ Closed</div>
+        </div>
+      </div>
+
+      <!-- Recent + Top Techs -->
+      <div class="dashboard-grid">
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <h3>Recent Partners</h3>
+            <a href="#" class="view-all-link" onclick="navigate('database')">View all →</a>
+          </div>
+          <div id="recentPartners" class="recent-list"></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <h3>Top Technologies</h3>
+          </div>
+          <div id="topTechnologies" class="tech-bars"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== ANALYTICS PAGE ======================== -->
+    <section class="page hidden" id="page-analytics">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Employee Analytics</h1>
+          <p class="page-subtitle">Partner sourcing performance by team member</p>
+        </div>
+      </div>
+      <div class="analytics-layout">
+        <div class="dash-card full-width">
+          <div class="dash-card-header"><h3>Partners Sourced by Employee</h3></div>
+          <div id="employeeAnalytics" class="employee-analytics-grid"></div>
+        </div>
+        <div class="dash-card full-width">
+          <div class="dash-card-header"><h3>Status Breakdown</h3></div>
+          <div id="statusBreakdown" class="status-breakdown-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== PARTNER DATABASE PAGE ======================== -->
+    <section class="page hidden" id="page-database">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Partner Database</h1>
+          <p class="page-subtitle">Manage and search all partner records</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-outline btn-sm" onclick="exportCSV()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export CSV
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="navigate('add')">+ Add Partner</button>
+        </div>
+      </div>
+
+      <!-- Search & Filter Bar -->
+      <div class="search-filter-bar">
+        <div class="search-wrap">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInput" class="search-input" placeholder="Search company, employee, technology, capability..." oninput="filterPartners()" />
+        </div>
+        <select id="statusFilter" class="filter-select" onchange="filterPartners()">
+          <option value="">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="In Discussion">In Discussion</option>
+          <option value="Submitted">Submitted</option>
+          <option value="Not Qualified">Not Qualified</option>
+        </select>
+        <select id="employeeFilter" class="filter-select" onchange="filterPartners()">
+          <option value="">All Employees</option>
+        </select>
+      </div>
+
+      <!-- Table -->
+      <div class="table-container">
+        <table class="data-table" id="partnersTable">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Employee</th>
+              <th>Contact</th>
+              <th>Technologies</th>
+              <th>Status</th>
+              <th>Added</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="partnersTableBody">
+          </tbody>
+        </table>
+        <div id="emptyState" class="empty-state hidden">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <p>No partners found</p>
+          <span>Try adjusting your search or filters</span>
+        </div>
+      </div>
+      <div class="table-footer">
+        <span id="tableCount">0 partners</span>
+      </div>
+    </section>
+
+    <!-- ======================== ADD PARTNER PAGE ======================== -->
+    <section class="page hidden" id="page-add">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Add New Partner</h1>
+          <p class="page-subtitle">Fill in the details to register a new partner</p>
+        </div>
+      </div>
+      <div class="form-layout">
+        <div class="form-card">
+          <div class="form-section-title">
+            <div class="form-section-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            Partner Information
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Employee Name <span class="required">*</span></label>
+              <input type="text" id="f-employee" class="form-input" placeholder="e.g. Pavan" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Company Name <span class="required">*</span></label>
+              <input type="text" id="f-company" class="form-input" placeholder="e.g. Cisco Systems" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contact Person</label>
+              <input type="text" id="f-contact" class="form-input" placeholder="e.g. John Smith" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" id="f-email" class="form-input" placeholder="contact@company.com" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Technologies <span class="form-hint">(comma separated)</span></label>
+              <input type="text" id="f-technologies" class="form-input" placeholder="e.g. Cloud, Security, AI/ML" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Partner Status <span class="required">*</span></label>
+              <select id="f-status" class="form-input form-select">
+                <option value="">Select status...</option>
+                <option value="Active">Active</option>
+                <option value="In Discussion">In Discussion</option>
+                <option value="Submitted">Submitted</option>
+                <option value="Not Qualified">Not Qualified</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-section-title">
+            <div class="form-section-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            Capability Statement
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Company Overview</label>
+            <textarea id="f-overview" class="form-textarea" rows="3" placeholder="Brief description of the company and its mission..."></textarea>
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label">Core Competencies <span class="form-hint">(comma separated)</span></label>
+            <input type="text" id="f-competencies" class="form-input" placeholder="e.g. Network Infrastructure, Cybersecurity, Cloud Solutions" />
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label">Relevant Services <span class="form-hint">(comma separated)</span></label>
+            <input type="text" id="f-services" class="form-input" placeholder="e.g. Managed Services, Professional Services, Training" />
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label">Industries Served</label>
+            <input type="text" id="f-industries" class="form-input" placeholder="e.g. Finance, Healthcare, Government" />
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label">Differentiators</label>
+            <textarea id="f-differentiators" class="form-textarea" rows="2" placeholder="What makes this partner stand out..."></textarea>
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label">Past Performance</label>
+            <textarea id="f-pastPerformance" class="form-textarea" rows="2" placeholder="Notable achievements and case studies..."></textarea>
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label">Certifications / Compliance</label>
+            <input type="text" id="f-certifications" class="form-input" placeholder="e.g. ISO 27001, SOC 2, FedRAMP" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-ghost" onclick="navigate('database')">Cancel</button>
+          <button class="btn btn-primary" onclick="addPartner()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Partner
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ======================== MODALS ======================== -->
+
+<!-- GitHub Config Modal -->
+<div class="modal-overlay hidden" id="configModal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h3 class="modal-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        GitHub Configuration
+      </h3>
+      <button class="modal-close" onclick="closeModal('configModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="config-desc">Connect to your GitHub repository to enable shared data storage across your team.</p>
+      <div class="form-group">
+        <label class="form-label">GitHub Token <span class="required">*</span></label>
+        <input type="password" id="cfg-token" class="form-input" placeholder="ghp_xxxxxxxxxxxx" />
+        <span class="form-hint">Personal Access Token with repo write access</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Repository Owner <span class="required">*</span></label>
+        <input type="text" id="cfg-owner" class="form-input" placeholder="your-username-or-org" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Repository Name <span class="required">*</span></label>
+        <input type="text" id="cfg-repo" class="form-input" placeholder="partner-hub" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Branch</label>
+        <input type="text" id="cfg-branch" class="form-input" placeholder="main" value="main" />
+      </div>
+      <div class="config-status" id="configStatus"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('configModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveConfig()">Save & Connect</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Partner Modal -->
+<div class="modal-overlay hidden" id="viewModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 class="modal-title" id="viewModalTitle">Partner Details</h3>
+      <button class="modal-close" onclick="closeModal('viewModal')">✕</button>
+    </div>
+    <div class="modal-body" id="viewModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('viewModal')">Close</button>
+      <button class="btn btn-outline" id="viewEditBtn">Edit Partner</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Partner Modal -->
+<div class="modal-overlay hidden" id="editModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 class="modal-title">Edit Partner</h3>
+      <button class="modal-close" onclick="closeModal('editModal')">✕</button>
+    </div>
+    <div class="modal-body" id="editModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('editModal')">Cancel</button>
+      <button class="btn btn-primary" id="saveEditBtn">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-overlay hidden" id="deleteModal">
+  <div class="modal modal-sm">
+    <div class="modal-header modal-header-danger">
+      <h3 class="modal-title">Confirm Deletion</h3>
+      <button class="modal-close" onclick="closeModal('deleteModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="delete-confirm-body">
+        <div class="delete-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </div>
+        <div>
+          <p class="delete-confirm-title">Delete <strong id="deletePartnerName"></strong>?</p>
+          <p class="delete-confirm-sub">This action cannot be undone. The partner record will be permanently removed from the shared database.</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">Delete Partner</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast hidden" id="toast">
+  <div class="toast-icon" id="toastIcon"></div>
+  <span id="toastMessage"></span>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay hidden" id="loadingOverlay">
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <span id="loadingText">Syncing with GitHub...</span>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
