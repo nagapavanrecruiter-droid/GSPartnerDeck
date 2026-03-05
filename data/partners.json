@@ -1,36 +1,5 @@
 [
   {
-    "id": "2",
-    "employee": "Sai",
-    "company": "Palo Alto Networks",
-    "contact": "Rachel Kim",
-    "email": "rachel.kim@paloalto.com",
-    "technologies": [
-      "Cybersecurity",
-      "Zero Trust",
-      "SIEM"
-    ],
-    "status": "Active",
-    "createdAt": "2024-02-03",
-    "capabilityStatement": {
-      "overview": "Palo Alto Networks is a global cybersecurity leader delivering best-in-class prevention-first security outcomes.",
-      "coreCompetencies": [
-        "Next-Gen Firewalls",
-        "Cloud Security",
-        "AI-Powered Threat Detection"
-      ],
-      "services": [
-        "Threat Intelligence",
-        "Incident Response",
-        "Security Consulting"
-      ],
-      "industries": "Financial Services, Healthcare, Critical Infrastructure",
-      "differentiators": "AI/ML-driven security that stops threats before they execute, with zero-day protection.",
-      "pastPerformance": "Protected 70,000+ organizations worldwide against advanced cyber threats.",
-      "certifications": "Common Criteria, FIPS 140-2, FedRAMP High"
-    }
-  },
-  {
     "id": "3",
     "employee": "Hanu",
     "company": "Microsoft Azure",
