@@ -1,36 +1,5 @@
 [
   {
-    "id": "4",
-    "employee": "Pavan",
-    "company": "ServiceNow",
-    "contact": "Lisa Johnson",
-    "email": "lisa.j@servicenow.com",
-    "technologies": [
-      "ITSM",
-      "Automation",
-      "Workflow"
-    ],
-    "status": "Submitted",
-    "createdAt": "2024-03-05",
-    "capabilityStatement": {
-      "overview": "ServiceNow transforms how work gets done, making the world of work, work better for people.",
-      "coreCompetencies": [
-        "IT Service Management",
-        "Business Process Automation",
-        "Employee Experience"
-      ],
-      "services": [
-        "Platform Implementation",
-        "Integration Services",
-        "Custom App Development"
-      ],
-      "industries": "Enterprise, Healthcare, Financial Services, Government",
-      "differentiators": "Single platform connecting people, functions, and systems across the enterprise.",
-      "pastPerformance": "Trusted by 85% of Fortune 500 companies for critical business workflows.",
-      "certifications": "ISO 27001, SOC 2, FedRAMP Moderate, TX-RAMP"
-    }
-  },
-  {
     "id": "5",
     "employee": "Sai",
     "company": "Snowflake",
