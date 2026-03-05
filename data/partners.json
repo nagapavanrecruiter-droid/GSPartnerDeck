@@ -1,37 +1,5 @@
 [
   {
-    "id": "5",
-    "employee": "Sai",
-    "company": "Snowflake",
-    "contact": "Mark Torres",
-    "email": "m.torres@snowflake.com",
-    "technologies": [
-      "Data Warehouse",
-      "Analytics",
-      "Cloud"
-    ],
-    "status": "In Discussion",
-    "createdAt": "2024-03-18",
-    "capabilityStatement": {
-      "overview": "Snowflake delivers the AI Data Cloud, enabling organizations to unite siloed data and run diverse workloads.",
-      "coreCompetencies": [
-        "Cloud Data Warehousing",
-        "Data Sharing",
-        "AI/ML on Data",
-        "Data Governance"
-      ],
-      "services": [
-        "Data Engineering",
-        "Analytics Platforms",
-        "Secure Data Collaboration"
-      ],
-      "industries": "Retail, Healthcare, Financial Services, Media, Technology",
-      "differentiators": "Single platform for all data workloads with near-unlimited scalability and instant elasticity.",
-      "pastPerformance": "Enabling 9,000+ organizations to mobilize data with the Snowflake Data Cloud.",
-      "certifications": "SOC 2 Type II, ISO 27001, HIPAA, FedRAMP Moderate"
-    }
-  },
-  {
     "id": "6",
     "employee": "Hanu",
     "company": "Splunk",
