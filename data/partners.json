@@ -1,5 +1,41 @@
 [
   {
+    "id": "1772834667612",
+    "employee": "Pavan",
+    "company": "Control Case",
+    "contact": "Chris Masters",
+    "email": "cmasters@controlcase.com",
+    "website": "https://www.controlcase.com/",
+    "technologies": [
+      "Compliance Automation Platforms",
+      "GRC Platforms Integration",
+      "Cloud Security & Compliance",
+      "Vulnerability Scanning & Security Testing"
+    ],
+    "status": "Submitted",
+    "createdAt": "2026-03-06",
+    "capabilityStatement": {
+      "overview": "ControlCase is a U.S.-based provider of cybersecurity, certification, and continuous compliance services headquartered in Fairfax, Virginia. The company offers technology-enabled compliance solutions, audits, and managed services to help organizations meet regulatory and security standards across on-premises and cloud environments. Their services focus on governance, risk management, and compliance (GRC) for organizations operating under multiple regulatory frameworks.",
+      "coreCompetencies": [
+        "Compliance-as-a-Service (CaaS) for ongoing regulatory monitoring and reporting",
+        "Cybersecurity and compliance assessments across multiple regulatory frameworks",
+        "IT governance",
+        "risk management",
+        "and compliance (GRC) consulting and solutions",
+        "Security testing including vulnerability assessments and penetration testing"
+      ],
+      "services": [
+        "Compliance assessments and certifications",
+        "Managed compliance and continuous monitoring services",
+        "Security testing and vulnerability assessment services"
+      ],
+      "industries": "Financial Services & Payment Processing, Government & Public Sector, Healthcare, Technology & Cloud Service Providers, Retail & E-commerce",
+      "differentiators": "Provides a Compliance-as-a-Service (CaaS) model combining technology platforms with managed services to automate compliance monitoring and evidence collection. The company’s approach includes solutions such as a unified audit model that maps evidence across multiple regulatory frameworks to reduce duplication of compliance activities. It supports organizations operating in regulated environments through global delivery capabilities and experience across multiple regulatory standards.",
+      "pastPerformance": "The website references support for organizations globally and indicates that more than 400 companies across 40+ countries have used ControlCase services. Specific project engagements or contract performance details are not publicly disclosed.",
+      "certifications": "PCI DSS (QSA and ASV services), ISO 27001 assessments, SOC 1 and SOC 2 assessments, HITRUST certification support, HIPAA assessments, GDPR assessments, FedRAMP services, CSA STAR certification, CMMC and NIST framework support."
+    }
+  },
+  {
     "id": "1772834474357",
     "employee": "Pavan",
     "company": "Federal Engineering",
