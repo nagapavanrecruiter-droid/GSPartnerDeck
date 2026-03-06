@@ -1,5 +1,40 @@
 [
   {
+    "id": "1772831080782",
+    "employee": "Pavan",
+    "company": "Keyhole Software",
+    "contact": "Kyle Hay",
+    "email": "khay@keyholesoftware.com",
+    "technologies": [
+      "Java",
+      ".NET",
+      "JavaScript",
+      "Cloud Platforms (AWS",
+      "Azure",
+      "Google Cloud)"
+    ],
+    "status": "In Discussion",
+    "createdAt": "2026-03-06",
+    "capabilityStatement": {
+      "overview": "Keyhole Software is a U.S.-based software development and consulting firm that provides enterprise application development, cloud engineering, and legacy system modernization services. Founded in 2008, the company delivers custom software solutions through senior-level, U.S.-based consultants who integrate with client teams to design, build, and modernize mission-critical systems.",
+      "coreCompetencies": [
+        "Custom enterprise software development",
+        "Cloud migration and cloud-native application engineering",
+        "Legacy system modernization and application refactoring",
+        "DevOps automation and CI/CD implementation"
+      ],
+      "services": [
+        "Custom Software Development",
+        "Cloud Consulting & Modernization",
+        "DevOps & Automation"
+      ],
+      "industries": "Healthcare, Financial Services, Insurance, Manufacturing, Logistics",
+      "differentiators": "•\tDelivery through senior-level consultants with an average of 17+ years of software development experience. \n•\t100% U.S.-based employee consultants with no offshore or subcontracted staffing model. \n•\tFlexible engagement models including project outsourcing, staff augmentation, and advisory consulting. \n•\tFocus on long-term client relationships and knowledge transfer to internal client teams.",
+      "pastPerformance": "•\tProvides custom software consulting services for organizations ranging from startups to Fortune 500 and Global 1000 companies.\n•\tExperience modernizing mission-critical systems for sectors including healthcare, financial services, manufacturing, logistics, and insurance.",
+      "certifications": "•\tMicrosoft Gold Partner (as referenced on company website services content), AWS Consulting Partner (as referenced on company website services content)."
+    }
+  },
+  {
     "id": "1772830585472",
     "employee": "Pavan",
     "company": "Capitol Tech Solutions",
