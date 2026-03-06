@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "id": "1772803373168",
+    "employee": "Pavan",
+    "company": "GenSigma",
+    "contact": "Pavan",
+    "email": "pavanc@gensigma.com",
+    "technologies": [
+      "Staffing"
+    ],
+    "status": "Active",
+    "createdAt": "2026-03-06",
+    "capabilityStatement": {
+      "overview": "",
+      "coreCompetencies": [],
+      "services": [],
+      "industries": "",
+      "differentiators": "",
+      "pastPerformance": "",
+      "certifications": ""
+    }
+  }
+]
