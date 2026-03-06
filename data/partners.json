@@ -1,5 +1,26 @@
 [
   {
+    "id": "1772803452528",
+    "employee": "Sai",
+    "company": "Streebo",
+    "contact": "Kumar",
+    "email": "kumar@Streebo.com",
+    "technologies": [
+      "AI"
+    ],
+    "status": "In Discussion",
+    "createdAt": "2026-03-06",
+    "capabilityStatement": {
+      "overview": "",
+      "coreCompetencies": [],
+      "services": [],
+      "industries": "",
+      "differentiators": "",
+      "pastPerformance": "",
+      "certifications": ""
+    }
+  },
+  {
     "id": "1772803373168",
     "employee": "Pavan",
     "company": "GenSigma",
