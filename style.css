@@ -687,11 +687,11 @@ body {
 
 .status-Active { background: var(--green-light); color: #059669; }
 .status-Active::before { background: #059669; }
-.status-In.Discussion, .status-In-Discussion { background: var(--amber-light); color: #d97706; }
+.status-In-Discussion { background: var(--amber-light); color: #d97706; }
 .status-In-Discussion::before { background: #d97706; }
 .status-Submitted { background: var(--purple-light); color: #7c3aed; }
 .status-Submitted::before { background: #7c3aed; }
-.status-Not.Qualified, .status-Not-Qualified { background: var(--red-light); color: #dc2626; }
+.status-Not-Qualified { background: var(--red-light); color: #dc2626; }
 .status-Not-Qualified::before { background: #dc2626; }
 
 /* Action buttons */
