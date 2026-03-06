@@ -454,6 +454,7 @@ async function addPartner() {
     company,
     contact: document.getElementById('f-contact').value.trim(),
     email: document.getElementById('f-email').value.trim(),
+    website: document.getElementById('f-website').value.trim(),
     technologies,
     status,
     createdAt: new Date().toISOString().split('T')[0],
@@ -546,6 +547,10 @@ function openEditModal(id) {
           <input type="email" id="e-email" class="form-input" value="${esc(partner.email || '')}" />
         </div>
         <div class="form-group">
+          <label class="form-label">Company Website</label>
+          <input type="url" id="e-website" class="form-input" value="${esc(partner.website || '')}" placeholder="https://www.company.com" />
+        </div>
+        <div class="form-group">
           <label class="form-label">Technologies <span class="form-hint">(comma separated)</span></label>
           <input type="text" id="e-technologies" class="form-input" value="${esc((partner.technologies || []).join(', '))}" />
         </div>
@@ -621,6 +626,7 @@ async function saveEdit(id) {
     employee, company, status,
     contact: document.getElementById('e-contact').value.trim(),
     email: document.getElementById('e-email').value.trim(),
+    website: document.getElementById('e-website').value.trim(),
     technologies,
     capabilityStatement: {
       overview: document.getElementById('e-overview').value.trim(),
@@ -667,6 +673,7 @@ function openViewModal(id) {
         <div class="detail-meta">
           ${esc(partner.contact || 'No contact')} &nbsp;·&nbsp;
           ${esc(partner.email || 'No email')} &nbsp;·&nbsp;
+          ${partner.website ? `<a href="${esc(partner.website)}" target="_blank" rel="noopener" style="color:var(--accent-dark);text-decoration:none;font-weight:500">🌐 Visit Website</a> &nbsp;·&nbsp;` : ''}
           ${statusBadge(partner.status)}
         </div>
       </div>
@@ -677,8 +684,9 @@ function openViewModal(id) {
       <div class="detail-grid">
         <div class="detail-field"><div class="detail-field-label">Sourced By</div><div class="detail-field-value">${esc(partner.employee)}</div></div>
         <div class="detail-field"><div class="detail-field-label">Status</div><div class="detail-field-value">${statusBadge(partner.status)}</div></div>
-        <div class="detail-field"><div class="detail-field-label">Added On</div><div class="detail-field-value">${formatDate(partner.createdAt)}</div></div>
         <div class="detail-field"><div class="detail-field-label">Contact Email</div><div class="detail-field-value">${partner.email ? `<a href="mailto:${esc(partner.email)}" style="color:var(--accent-dark)">${esc(partner.email)}</a>` : '—'}</div></div>
+        <div class="detail-field"><div class="detail-field-label">Website</div><div class="detail-field-value">${partner.website ? `<a href="${esc(partner.website)}" target="_blank" rel="noopener" style="color:var(--accent-dark)">${esc(partner.website)}</a>` : '—'}</div></div>
+        <div class="detail-field"><div class="detail-field-label">Added On</div><div class="detail-field-value">${formatDate(partner.createdAt)}</div></div>
       </div>
     </div>
 
@@ -870,7 +878,11 @@ function renderTable(data) {
             <div class="company-avatar">${p.company.charAt(0)}</div>
             <div>
               <div class="company-name">${esc(p.company)}</div>
-              <div class="company-email">${esc(p.contact || '')}</div>
+              <div class="company-email">
+                ${p.website
+                  ? `<a href="${esc(p.website)}" target="_blank" rel="noopener" style="color:var(--accent-dark);text-decoration:none;font-size:0.72rem;font-weight:500" title="${esc(p.website)}">🌐 Website</a>`
+                  : esc(p.contact || '')}
+              </div>
             </div>
           </div>
         </td>
@@ -949,13 +961,13 @@ function exportCSV() {
     return;
   }
 
-  const headers = ['Employee', 'Company', 'Contact', 'Email', 'Technologies', 'Status', 'Added',
+  const headers = ['Employee', 'Company', 'Contact', 'Email', 'Website', 'Technologies', 'Status', 'Added',
     'Overview', 'Core Competencies', 'Services', 'Industries', 'Differentiators', 'Past Performance', 'Certifications'];
 
   const rows = exportData.map(p => {
     const cap = p.capabilityStatement || {};
     return [
-      p.employee, p.company, p.contact, p.email,
+      p.employee, p.company, p.contact, p.email, p.website || '',
       (p.technologies || []).join('; '),
       p.status, p.createdAt,
       cap.overview, (cap.coreCompetencies || []).join('; '),
@@ -1017,7 +1029,7 @@ function animateNumber(id, target) {
 }
 
 function clearAddForm() {
-  ['f-employee','f-company','f-contact','f-email','f-technologies',
+  ['f-employee','f-company','f-contact','f-email','f-website','f-technologies',
    'f-overview','f-competencies','f-services','f-industries',
    'f-differentiators','f-pastPerformance','f-certifications'].forEach(id => {
     const el = document.getElementById(id);
