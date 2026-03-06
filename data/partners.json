@@ -1,5 +1,38 @@
 [
   {
+    "id": "1772830585472",
+    "employee": "Pavan",
+    "company": "Capitol Tech Solutions",
+    "contact": "Ari Johnson",
+    "email": "ajohnson@capitoltechsolutions.com",
+    "technologies": [
+      "Web Development Technologies",
+      "Microsoft .NET",
+      "Cloud Applications",
+      "Data Visualization & Analytics"
+    ],
+    "status": "In Discussion",
+    "createdAt": "2026-03-06",
+    "capabilityStatement": {
+      "overview": "Capitol Tech Solutions (CTS) is a technology consulting and digital transformation firm headquartered in Sacramento, California. The company provides software development, data science, and user experience services to businesses, nonprofit organizations, and government agencies. CTS focuses on delivering technology solutions that support digital operations, data-driven decision-making, and modern web platforms.",
+      "coreCompetencies": [
+        "Custom Software Application Development and System Implementation",
+        "Web and User Experience (UX) Design and Development",
+        "Data Science and Data Visualization Solutions",
+        "Application Code Review and Technical Assessment Services"
+      ],
+      "services": [
+        "Custom Software Development and Application Engineering",
+        "Data Science and Analytics Solutions",
+        "Managed IT Support and Technical Environment Monitoring"
+      ],
+      "industries": "Technology, Healthcare, Finance, Education, Public Sector / Government",
+      "differentiators": "Capitol Tech Solutions delivers end-to-end technology services, managing the full software development lifecycle from requirements definition through implementation, testing, and maintenance. The firm combines software engineering, data analytics, and user experience design to support digital transformation initiatives for public and private sector organizations. Its engagement model emphasizes tailored technical solutions aligned to each client’s operational requirements.",
+      "pastPerformance": "Capitol Tech Solutions has supported projects involving data reporting and visualization for organizations working with the California Department of Public Health and the California Governor’s Office. The company has also delivered custom software, web development, and digital strategy solutions for organizations across nonprofit, political, and business sectors.",
+      "certifications": "Microsoft Solutions Partner - Digital & App Innovation (as referenced on company website)."
+    }
+  },
+  {
     "id": "1772807599630",
     "employee": "SYED SHAIKSHAVALI",
     "company": "D3Clarity, Inc.",
