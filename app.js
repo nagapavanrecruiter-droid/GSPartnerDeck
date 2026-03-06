@@ -99,7 +99,7 @@ function closeSidebar() {
 // GITHUB CONFIG
 // ============================================================
 function loadConfig() {
-  const saved = sessionStorage.getItem('ph_config');
+  const saved = localStorage.getItem('ph_config');
   if (saved) {
     try {
       githubConfig = JSON.parse(saved);
@@ -124,7 +124,7 @@ function saveConfig() {
   }
 
   githubConfig = { token, owner, repo, branch };
-  sessionStorage.setItem('ph_config', JSON.stringify(githubConfig));
+  localStorage.setItem('ph_config', JSON.stringify(githubConfig));
 
   showConfigStatus('success', 'Saved! Testing connection...');
   testGitHubConnection();
@@ -137,13 +137,18 @@ async function testGitHubConnection() {
     });
     if (resp.ok) {
       showConfigStatus('success', '✓ Connected successfully! Loading partners...');
+      hideBanner();
       setTimeout(() => closeModal('configModal'), 1200);
       loadPartners();
+    } else if (resp.status === 401) {
+      showConfigStatus('error', '❌ Invalid token. Check your GitHub Personal Access Token.');
+    } else if (resp.status === 404) {
+      showConfigStatus('error', '❌ Repo not found. Check owner and repository name.');
     } else {
-      showConfigStatus('error', `Connection failed: ${resp.status} ${resp.statusText}`);
+      showConfigStatus('error', `❌ Connection failed: ${resp.status} ${resp.statusText}`);
     }
   } catch (e) {
-    showConfigStatus('error', `Error: ${e.message}`);
+    showConfigStatus('error', `❌ Network error: ${e.message}`);
   }
 }
 
@@ -153,17 +158,66 @@ function showConfigStatus(type, message) {
   el.className = `config-status ${type}`;
 }
 
+function showNotConfiguredBanner() {
+  const existing = document.getElementById('gh-banner');
+  if (existing) return;
+  const banner = document.createElement('div');
+  banner.id = 'gh-banner';
+  banner.innerHTML = `
+    <div style="
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 1px solid rgba(245,158,11,0.4);
+      border-radius: 10px;
+      padding: 14px 20px;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    ">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:1.3rem">⚠️</div>
+        <div>
+          <div style="font-size:0.88rem;font-weight:700;color:#fbbf24;margin-bottom:2px">GitHub Not Configured</div>
+          <div style="font-size:0.78rem;color:#94a3b8">Partner data will not be saved. Press <kbd style="background:#334155;color:#e2e8f0;padding:1px 6px;border-radius:4px;font-size:0.72rem">Ctrl+Shift+G</kbd> to connect your GitHub repository.</div>
+        </div>
+      </div>
+      <button onclick="openModal('configModal')" style="
+        background: linear-gradient(135deg, #00d4aa, #00b891);
+        color: #0a0f1e;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-family: Poppins, sans-serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+      ">Connect Now</button>
+    </div>
+  `;
+  const content = document.querySelector('.content-area');
+  content.insertBefore(banner, content.firstChild);
+}
+
+function hideBanner() {
+  const banner = document.getElementById('gh-banner');
+  if (banner) banner.remove();
+}
+
 // ============================================================
 // DATA LOADING
 // ============================================================
 async function loadPartners() {
   if (githubConfig.token && githubConfig.owner && githubConfig.repo) {
+    hideBanner();
     await loadFromGitHub();
   } else {
-    // Try to load from local data/partners.json (fallback for dev)
-    await loadFromLocal();
+    showNotConfiguredBanner();
+    partners = [];
+    renderAll();
   }
-  renderAll();
 }
 
 async function loadFromGitHub() {
@@ -186,19 +240,29 @@ async function loadFromGitHub() {
       partners = JSON.parse(decoded);
       setSyncStatus('connected', 'Connected');
       updateNavBadge();
+      renderAll();
     } else if (resp.status === 404) {
-      // File doesn't exist yet, initialize it
+      // File doesn't exist yet — create it
       partners = [];
-      await saveToGitHub('Initialize partner database', true);
-      setSyncStatus('connected', 'Initialized');
+      fileSha = null;
+      const created = await saveToGitHub('Initialize partner database');
+      if (created) {
+        setSyncStatus('connected', 'Initialized');
+        showToast('✓ Repository initialized. Ready to add partners!', 'success');
+      }
+      renderAll();
+    } else if (resp.status === 401) {
+      setSyncStatus('error', 'Auth failed');
+      showToast('❌ GitHub token is invalid or expired. Press Ctrl+Shift+G to update it.', 'error');
+      showNotConfiguredBanner();
     } else {
-      throw new Error(`HTTP ${resp.status}`);
+      throw new Error(`HTTP ${resp.status} — ${resp.statusText}`);
     }
   } catch (e) {
     console.error('GitHub load error:', e);
-    setSyncStatus('error', 'Sync error');
-    showToast('⚠️ Could not load from GitHub. Using local data.', 'warning');
-    await loadFromLocal();
+    setSyncStatus('error', 'Sync failed');
+    showToast(`❌ GitHub error: ${e.message}`, 'error');
+    showNotConfiguredBanner();
   }
 }
 
@@ -219,20 +283,16 @@ async function loadFromLocal() {
 // ============================================================
 // GITHUB SAVE
 // ============================================================
-async function saveToGitHub(message = 'Update partners', isInit = false) {
+async function saveToGitHub(message = 'Update partners') {
   if (!githubConfig.token || !githubConfig.owner || !githubConfig.repo) {
-    showToast('⚠️ GitHub not configured. Data saved locally only.', 'warning');
+    showToast('⚠️ GitHub not configured — data will be lost on refresh. Press Ctrl+Shift+G to connect.', 'warning');
     return false;
   }
 
-  showLoading('Syncing with GitHub...');
+  showLoading('Saving to GitHub...');
   try {
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(partners, null, 2))));
-    const body = {
-      message,
-      content,
-      branch: githubConfig.branch
-    };
+    const body = { message, content, branch: githubConfig.branch };
     if (fileSha) body.sha = fileSha;
 
     const resp = await fetch(
@@ -252,16 +312,23 @@ async function saveToGitHub(message = 'Update partners', isInit = false) {
       const data = await resp.json();
       fileSha = data.content.sha;
       hideLoading();
-      setSyncStatus('connected', 'Saved');
+      setSyncStatus('connected', 'Saved ✓');
       return true;
     } else {
       const err = await resp.json();
+      if (resp.status === 409) {
+        // SHA conflict — re-fetch and retry once
+        hideLoading();
+        showToast('⚠️ Sync conflict detected, retrying...', 'warning');
+        await loadFromGitHub();
+        return await saveToGitHub(message);
+      }
       throw new Error(err.message || `HTTP ${resp.status}`);
     }
   } catch (e) {
     hideLoading();
     setSyncStatus('error', 'Save failed');
-    showToast(`❌ GitHub save failed: ${e.message}`, 'error');
+    showToast(`❌ Failed to save: ${e.message}`, 'error');
     return false;
   }
 }
@@ -306,16 +373,16 @@ async function addPartner() {
 
   partners.unshift(partner);
   const saved = await saveToGitHub(`Add partner: ${company}`);
-  if (saved || !githubConfig.token) {
+  if (saved) {
     showToast(`✓ ${company} added successfully`, 'success');
     clearAddForm();
     renderAll();
     navigate('database');
   } else {
-    // Rollback if save failed
+    // Rollback
     partners.shift();
+    renderAll();
   }
-  hideLoading();
 }
 
 function openDeleteModal(id) {
@@ -336,7 +403,7 @@ async function confirmDelete(id) {
   closeModal('deleteModal');
 
   const saved = await saveToGitHub(`Delete partner: ${partner.company}`);
-  if (saved || !githubConfig.token) {
+  if (saved) {
     showToast(`✓ ${partner.company} deleted`, 'success');
     renderAll();
   } else {
@@ -344,7 +411,6 @@ async function confirmDelete(id) {
     partners = oldPartners;
     renderAll();
   }
-  hideLoading();
 }
 
 function openEditModal(id) {
@@ -465,15 +531,13 @@ async function saveEdit(id) {
 
   closeModal('editModal');
   const saved = await saveToGitHub(`Update partner: ${company}`);
-
-  if (saved || !githubConfig.token) {
+  if (saved) {
     showToast(`✓ ${company} updated successfully`, 'success');
     renderAll();
   } else {
     partners[idx] = oldPartner;
     renderAll();
   }
-  hideLoading();
 }
 
 function openViewModal(id) {
