@@ -1,5 +1,39 @@
 [
   {
+    "id": "1772834474357",
+    "employee": "Pavan",
+    "company": "Federal Engineering",
+    "contact": "Jeffrey Paré",
+    "email": "jpare@fedeng.com",
+    "website": "https://fedeng.com/",
+    "technologies": [
+      "Land Mobile Radio (LMR)",
+      "Next Generation 9-1-1 (NG911)",
+      "LTE / Mobile Broadband Communications",
+      "CAD/RMS Public Safety Systems"
+    ],
+    "status": "Submitted",
+    "createdAt": "2026-03-06",
+    "capabilityStatement": {
+      "overview": "Federal Engineering, Inc. is an independent public safety communications consulting firm specializing in the planning, design, and implementation of critical communications systems for government and public service organizations. Founded in 1983, the firm provides advisory and lifecycle support services for emergency communications infrastructure, including 9-1-1 systems, land mobile radio networks, and emergency operations centers. Their work focuses on helping jurisdictions design, procure, and implement reliable communications systems for first responders and public safety agencies.",
+      "coreCompetencies": [
+        "Public safety communications system planning and design",
+        "Next Generation 9-1-1 (NG911) and PSAP consulting",
+        "Land Mobile Radio (LMR) system engineering and modernization",
+        "Communications infrastructure procurement and implementation advisory"
+      ],
+      "services": [
+        "Public safety communications consulting and lifecycle support",
+        "Emergency communications center and 9-1-1 system planning and implementation",
+        "Land mobile radio and wireless communications system consulting"
+      ],
+      "industries": "Public Safety and Emergency Services, Government (Federal / State / Local), Transportation, Utilities, Critical Infrastructure",
+      "differentiators": "Federal Engineering operates as an independent consulting firm that is not affiliated with equipment manufacturers or service providers, allowing the firm to provide objective technical recommendations and procurement guidance. The company provides full lifecycle advisory services from needs assessment and system design to procurement support and implementation for mission-critical communications systems used by public safety and government organizations.",
+      "pastPerformance": "The firm has completed thousands of communications projects for government and public safety organizations across all 50 U.S. states and Canada. Publicly referenced engagements include consulting support for radio communications systems, CAD/RMS modernization, emergency communications center consolidation assessments, and Next Generation 9-1-1 initiatives for state and local jurisdictions.",
+      "certifications": "No certifications or compliance details are publicly listed."
+    }
+  },
+  {
     "id": "1772831080782",
     "employee": "Pavan",
     "company": "Keyhole Software",
