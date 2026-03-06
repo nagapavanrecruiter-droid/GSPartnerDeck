@@ -1,5 +1,43 @@
 [
   {
+    "id": "1772837212561",
+    "employee": "SYED SHAIKSHAVALI",
+    "company": "Wakefly, Inc.",
+    "contact": "Dean Dorazio",
+    "email": "ddorazio@wakefly.com",
+    "website": "https://www.wakefly.com/",
+    "technologies": [
+      "Web Development",
+      "Digital Marketing",
+      "Content Management Systems (CMS)",
+      "Cloud Hosting & DevOps"
+    ],
+    "status": "Submitted",
+    "createdAt": "2026-03-06",
+    "capabilityStatement": {
+      "overview": "Wakefly, Inc. is a U.S.-based digital experience and web development firm providing website design, development, digital marketing, and hosting services. Founded in 2002, the company supports organizations in building and managing modern web platforms that improve online presence, user experience, and lead generation. Wakefly delivers end-to-end services covering website strategy, development, digital marketing, and ongoing site support.",
+      "coreCompetencies": [
+        "Custom website design and development",
+        "Digital marketing and lead generation strategy including PPC and SEO",
+        "Content management system (CMS) implementation and integration",
+        "Website hosting",
+        "DevOps",
+        "and ongoing site management"
+      ],
+      "services": [
+        "Website design and development",
+        "Digital marketing and lead generation services",
+        "Website hosting",
+        "maintenance",
+        "and DevOps support"
+      ],
+      "industries": "Banking and credit unions, Healthcare and life sciences, High technology, Engineering and manufacturing, Non-profit organizations, Transportation and logistics",
+      "differentiators": "Wakefly provides integrated web development and digital marketing services, supporting organizations from initial website design through deployment and ongoing operational support. The firm combines development, marketing strategy, and cloud hosting capabilities to deliver scalable websites and digital platforms aligned with business objectives.",
+      "pastPerformance": "The company website references projects involving website design, CMS implementation, upgrades, and digital experience improvements for organizations such as Gogo, ECHO, National Association of Independent Colleges and Universities (NAICU), Health Plans, Inc., HarborOne Bank, and Atlas Van Lines.",
+      "certifications": "Kentico Gold Partner and Kentico Quality Expert partner status are referenced on the website."
+    }
+  },
+  {
     "id": "1772835455433",
     "employee": "SYED SHAIKSHAVALI",
     "company": "Apolis",
