@@ -1,5 +1,43 @@
 [
   {
+    "id": "1772807599630",
+    "employee": "SYED SHAIKSHAVALI",
+    "company": "D3Clarity, Inc.",
+    "contact": "Alec Brasier",
+    "email": "alec.brasier@d3clarity.com",
+    "technologies": [
+      "AI / Machine Learning  Cloud Computing (AWS)  Data Engineering & Data Platforms  Data Governance & Master Data Management  Advanced Analytics / Business Intelligence  Cybersecurity  Contact Center / CX Modernization"
+    ],
+    "status": "Submitted",
+    "createdAt": "2026-03-06",
+    "capabilityStatement": {
+      "overview": "D3Clarity, Inc. is a professional services firm providing consulting and implementation services focused on data, cloud, and artificial intelligence solutions. The company supports organizations in modernizing data infrastructure, improving data governance and integration, and implementing cloud and AI capabilities to enable data-driven decision making and operational efficiency.",
+      "coreCompetencies": [
+        "Data management",
+        "governance",
+        "and master data management (MDM) solutions  Cloud strategy",
+        "migration",
+        "and cloud infrastructure optimization  AI and advanced analytics implementation",
+        "including generative AI initiatives  Data integration",
+        "data pipeline optimization",
+        "and modern data lake architecture"
+      ],
+      "services": [
+        "Data governance",
+        "data quality improvement",
+        "and enterprise data management services  Cloud architecture design",
+        "cloud migration",
+        "and cloud infrastructure management  AI data services",
+        "analytics implementation",
+        "and data platform development"
+      ],
+      "industries": "Energy and Oil & Gas  Education  Healthcare and Life Sciences",
+      "differentiators": "Focus on integrating data strategy, governance, and cloud modernization to support AI and analytics initiatives\n\nProvides end-to-end consulting services covering data architecture, integration, and operationalization of data platforms\n\nEmphasis on building scalable data infrastructure and governed data environments to support enterprise analytics and automation initiatives",
+      "pastPerformance": "The company website references project work involving enterprise data management and analytics initiatives, including:\n\nData management and equipment data relationship solutions for a global energy company\n\nData-driven analytics initiatives supporting Texas education services\n\nVendor onboarding and data management solutions for organizations in the oil and gas sector",
+      "certifications": "The website references an AWS Migration Competency status and notes that the company has renewed a SOC 2 Type II audit."
+    }
+  },
+  {
     "id": "1772803452528",
     "employee": "Sai",
     "company": "Streebo",
