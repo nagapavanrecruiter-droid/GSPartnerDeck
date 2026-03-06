@@ -1,5 +1,39 @@
 [
   {
+    "id": "1772835455433",
+    "employee": "SYED SHAIKSHAVALI",
+    "company": "Apolis",
+    "contact": "Bala Vedagiri",
+    "email": "Bala.Vedagiri@apolisrises.com",
+    "website": "https://apolisrises.com/",
+    "technologies": [
+      "ERP Solutions",
+      "Cloud Computing",
+      "Enterprise Applications",
+      "Web & Mobile Development"
+    ],
+    "status": "Submitted",
+    "createdAt": "2026-03-06",
+    "capabilityStatement": {
+      "overview": "Apolis is a global IT consultancy that provides technology consulting, managed services, and IT staffing solutions. The company integrates technology specialists and enterprise solutions into client organizations to support technology implementation, operations, and workforce needs. Apolis delivers services across enterprise applications, cloud platforms, and digital development environments.",
+      "coreCompetencies": [
+        "Enterprise application implementation and support (Oracle and SAP)",
+        "Cloud hosting and infrastructure solutions",
+        "IT staffing and workforce solutions",
+        "Web and mobile application development with DevOps and QA support"
+      ],
+      "services": [
+        "ERP implementation and managed application services",
+        "Cloud hosting and infrastructure services",
+        "IT staffing and workforce management solutions"
+      ],
+      "industries": "Automotive, Manufacturing, Distribution & Logistics, Retail & Consumer Products, Financial Services",
+      "differentiators": "Provides a combined model of IT consulting, enterprise application services, and IT workforce solutions to support both technology delivery and staffing requirements.\nOperates with a global delivery model and a network of consultants supporting enterprise technology implementations and managed services.",
+      "pastPerformance": "The company website references engagements with organizations including 3M, Nestlé, Qualcomm, Toyota, Toyota Financial Services, Bank of the West, Boingo, Kyocera, Toshiba Medical Systems, Carvana, Evite, and Miramax.",
+      "certifications": "No certifications or compliance details are publicly listed."
+    }
+  },
+  {
     "id": "1772834667612",
     "employee": "Pavan",
     "company": "Control Case",
