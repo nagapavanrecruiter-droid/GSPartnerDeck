@@ -99,111 +99,164 @@ function closeSidebar() {
 // GITHUB CONFIG
 // ============================================================
 function loadConfig() {
-  const saved = localStorage.getItem('ph_config');
-  if (saved) {
-    try {
-      githubConfig = JSON.parse(saved);
-    } catch (e) {}
-  }
-  // Pre-fill config modal
-  document.getElementById('cfg-token').value = githubConfig.token || '';
-  document.getElementById('cfg-owner').value = githubConfig.owner || '';
-  document.getElementById('cfg-repo').value = githubConfig.repo || '';
+  try {
+    const saved = localStorage.getItem('ph_config');
+    if (saved) githubConfig = JSON.parse(saved);
+  } catch (e) { console.warn('Config load error:', e); }
+
+  document.getElementById('cfg-token').value  = githubConfig.token  || '';
+  document.getElementById('cfg-owner').value  = githubConfig.owner  || '';
+  document.getElementById('cfg-repo').value   = githubConfig.repo   || '';
   document.getElementById('cfg-branch').value = githubConfig.branch || 'main';
 }
 
 function saveConfig() {
-  const token = document.getElementById('cfg-token').value.trim();
-  const owner = document.getElementById('cfg-owner').value.trim();
-  const repo = document.getElementById('cfg-repo').value.trim();
+  const token  = document.getElementById('cfg-token').value.trim();
+  const owner  = document.getElementById('cfg-owner').value.trim();
+  const repo   = document.getElementById('cfg-repo').value.trim();
   const branch = document.getElementById('cfg-branch').value.trim() || 'main';
 
   if (!token || !owner || !repo) {
-    showConfigStatus('error', 'Please fill in all required fields.');
+    showConfigStatus('error', '❌ Please fill in all required fields.');
     return;
   }
 
   githubConfig = { token, owner, repo, branch };
-  localStorage.setItem('ph_config', JSON.stringify(githubConfig));
-
-  showConfigStatus('success', 'Saved! Testing connection...');
-  testGitHubConnection();
+  try { localStorage.setItem('ph_config', JSON.stringify(githubConfig)); } catch(e) {}
+  showConfigStatus('success', '✓ Config saved — running diagnostics...');
+  runDiagnostics();
 }
 
-async function testGitHubConnection() {
-  try {
-    const resp = await fetch(`https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}`, {
-      headers: { Authorization: `Bearer ${githubConfig.token}` }
-    });
-    if (resp.ok) {
-      showConfigStatus('success', '✓ Connected successfully! Loading partners...');
-      hideBanner();
-      setTimeout(() => closeModal('configModal'), 1200);
-      loadPartners();
-    } else if (resp.status === 401) {
-      showConfigStatus('error', '❌ Invalid token. Check your GitHub Personal Access Token.');
-    } else if (resp.status === 404) {
-      showConfigStatus('error', '❌ Repo not found. Check owner and repository name.');
-    } else {
-      showConfigStatus('error', `❌ Connection failed: ${resp.status} ${resp.statusText}`);
+async function runDiagnostics() {
+  const el = document.getElementById('configStatus');
+  el.className = 'config-status';
+
+  const steps = [
+    { label: '1. Authenticating with GitHub…',        fn: checkAuth },
+    { label: '2. Checking repository access…',        fn: checkRepo },
+    { label: '3. Locating data/partners.json…',       fn: checkFile },
+  ];
+
+  for (const step of steps) {
+    el.innerHTML = `<span style="color:#94a3b8">${step.label}</span>`;
+    const result = await step.fn();
+    if (!result.ok) {
+      el.className = 'config-status error';
+      el.innerHTML = `❌ <strong>${step.label.split('…')[0].replace(/^\d\.\s/,'')}</strong> failed:<br>${result.error}`;
+      return;
     }
-  } catch (e) {
-    showConfigStatus('error', `❌ Network error: ${e.message}`);
   }
+
+  el.className = 'config-status success';
+  el.innerHTML = '✅ All checks passed! Loading partner data…';
+  hideBanner();
+  setTimeout(() => closeModal('configModal'), 1400);
+  await loadPartners();
+}
+
+async function checkAuth() {
+  try {
+    const r = await ghFetch('https://api.github.com/user');
+    if (r.status === 401) return { ok: false, error: 'Invalid or expired token. Generate a new one at github.com → Settings → Developer Settings → Personal Access Tokens.' };
+    if (!r.ok) return { ok: false, error: `GitHub returned HTTP ${r.status}` };
+    return { ok: true };
+  } catch(e) { return { ok: false, error: `Network error: ${e.message}` }; }
+}
+
+async function checkRepo() {
+  try {
+    const r = await ghFetch(`https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}`);
+    if (r.status === 404) return { ok: false, error: `Repo "${githubConfig.owner}/${githubConfig.repo}" not found. Check the owner and repo name.` };
+    if (r.status === 403) return { ok: false, error: 'Token does not have access to this repository.' };
+    if (!r.ok) return { ok: false, error: `Repo check failed: HTTP ${r.status}` };
+    return { ok: true };
+  } catch(e) { return { ok: false, error: `Network error: ${e.message}` }; }
+}
+
+async function checkFile() {
+  try {
+    const r = await ghFetch(
+      `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data/partners.json?ref=${githubConfig.branch}`
+    );
+    if (r.status === 404) {
+      // File doesn't exist — try to create it
+      const created = await initPartnersFile();
+      if (!created.ok) return { ok: false, error: `Could not create data/partners.json: ${created.error}. Make sure your token has "repo" write scope.` };
+      return { ok: true };
+    }
+    if (!r.ok) return { ok: false, error: `File check failed: HTTP ${r.status}` };
+    const data = await r.json();
+    fileSha = data.sha;
+    return { ok: true };
+  } catch(e) { return { ok: false, error: `Error: ${e.message}` }; }
+}
+
+async function initPartnersFile() {
+  try {
+    const content = btoa('[]');
+    const r = await fetch(
+      `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data/partners.json`,
+      {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${githubConfig.token}`,
+          Accept: 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: 'Initialize partner database', content, branch: githubConfig.branch })
+      }
+    );
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      return { ok: false, error: err.message || `HTTP ${r.status}` };
+    }
+    const data = await r.json();
+    fileSha = data.content.sha;
+    partners = [];
+    return { ok: true };
+  } catch(e) { return { ok: false, error: e.message }; }
 }
 
 function showConfigStatus(type, message) {
   const el = document.getElementById('configStatus');
-  el.textContent = message;
+  el.innerHTML = message;
   el.className = `config-status ${type}`;
 }
 
+// Helper: authenticated GitHub fetch
+function ghFetch(url, options = {}) {
+  return fetch(url, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${githubConfig.token}`,
+      Accept: 'application/vnd.github.v3+json',
+      ...(options.headers || {})
+    }
+  });
+}
+
 function showNotConfiguredBanner() {
-  const existing = document.getElementById('gh-banner');
-  if (existing) return;
+  if (document.getElementById('gh-banner')) return;
   const banner = document.createElement('div');
   banner.id = 'gh-banner';
   banner.innerHTML = `
-    <div style="
-      background: linear-gradient(135deg, #1e293b, #0f172a);
-      border: 1px solid rgba(245,158,11,0.4);
-      border-radius: 10px;
-      padding: 14px 20px;
-      margin-bottom: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-    ">
+    <div style="background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid rgba(245,158,11,0.4);border-radius:10px;padding:14px 20px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 4px 14px rgba(0,0,0,0.15)">
       <div style="display:flex;align-items:center;gap:12px">
         <div style="font-size:1.3rem">⚠️</div>
         <div>
-          <div style="font-size:0.88rem;font-weight:700;color:#fbbf24;margin-bottom:2px">GitHub Not Configured</div>
-          <div style="font-size:0.78rem;color:#94a3b8">Partner data will not be saved. Press <kbd style="background:#334155;color:#e2e8f0;padding:1px 6px;border-radius:4px;font-size:0.72rem">Ctrl+Shift+G</kbd> to connect your GitHub repository.</div>
+          <div style="font-size:0.88rem;font-weight:700;color:#fbbf24;margin-bottom:2px">GitHub Not Connected</div>
+          <div style="font-size:0.78rem;color:#94a3b8">Data will not be saved on refresh. Click <strong style="color:#e2e8f0">Connect Now</strong> and enter your GitHub details.</div>
         </div>
       </div>
-      <button onclick="openModal('configModal')" style="
-        background: linear-gradient(135deg, #00d4aa, #00b891);
-        color: #0a0f1e;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-family: Poppins, sans-serif;
-        font-size: 0.78rem;
-        font-weight: 700;
-        cursor: pointer;
-        white-space: nowrap;
-      ">Connect Now</button>
-    </div>
-  `;
+      <button onclick="openModal('configModal')" style="background:linear-gradient(135deg,#00d4aa,#00b891);color:#0a0f1e;border:none;padding:8px 16px;border-radius:8px;font-family:Poppins,sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;white-space:nowrap">Connect Now</button>
+    </div>`;
   const content = document.querySelector('.content-area');
   content.insertBefore(banner, content.firstChild);
 }
 
 function hideBanner() {
-  const banner = document.getElementById('gh-banner');
-  if (banner) banner.remove();
+  const b = document.getElementById('gh-banner');
+  if (b) b.remove();
 }
 
 // ============================================================
@@ -215,69 +268,58 @@ async function loadPartners() {
     await loadFromGitHub();
   } else {
     showNotConfiguredBanner();
+    setSyncStatus('warning', 'Not connected');
     partners = [];
     renderAll();
   }
 }
 
 async function loadFromGitHub() {
-  setSyncStatus('loading', 'Syncing...');
+  setSyncStatus('loading', 'Loading...');
   try {
-    const resp = await fetch(
-      `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data/partners.json?ref=${githubConfig.branch}&t=${Date.now()}`,
-      {
-        headers: {
-          Authorization: `Bearer ${githubConfig.token}`,
-          Accept: 'application/vnd.github.v3+json'
-        }
-      }
+    const resp = await ghFetch(
+      `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data/partners.json?ref=${githubConfig.branch}&_=${Date.now()}`
     );
 
     if (resp.ok) {
       const data = await resp.json();
       fileSha = data.sha;
-      const decoded = atob(data.content.replace(/\n/g, ''));
-      partners = JSON.parse(decoded);
-      setSyncStatus('connected', 'Connected');
+      // Decode base64 content safely (handles Unicode)
+      const raw = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+      partners = JSON.parse(raw);
+      setSyncStatus('connected', `Synced · ${partners.length} partners`);
+      hideBanner();
       updateNavBadge();
       renderAll();
+
     } else if (resp.status === 404) {
-      // File doesn't exist yet — create it
-      partners = [];
-      fileSha = null;
-      const created = await saveToGitHub('Initialize partner database');
-      if (created) {
-        setSyncStatus('connected', 'Initialized');
-        showToast('✓ Repository initialized. Ready to add partners!', 'success');
+      // data/partners.json doesn't exist — create it now
+      setSyncStatus('loading', 'Initializing...');
+      const init = await initPartnersFile();
+      if (init.ok) {
+        setSyncStatus('connected', 'Initialized · 0 partners');
+        showToast('✓ data/partners.json created in your repo. Ready!', 'success');
+      } else {
+        setSyncStatus('error', 'Init failed');
+        showToast(`❌ Could not create data/partners.json: ${init.error}`, 'error');
+        showNotConfiguredBanner();
       }
       renderAll();
+
     } else if (resp.status === 401) {
-      setSyncStatus('error', 'Auth failed');
-      showToast('❌ GitHub token is invalid or expired. Press Ctrl+Shift+G to update it.', 'error');
+      setSyncStatus('error', 'Token invalid');
+      showToast('❌ GitHub token is invalid or expired. Press Ctrl+Shift+G to update.', 'error');
       showNotConfiguredBanner();
+
     } else {
       throw new Error(`HTTP ${resp.status} — ${resp.statusText}`);
     }
   } catch (e) {
     console.error('GitHub load error:', e);
-    setSyncStatus('error', 'Sync failed');
-    showToast(`❌ GitHub error: ${e.message}`, 'error');
+    setSyncStatus('error', 'Load failed');
+    showToast(`❌ Could not load data: ${e.message}`, 'error');
     showNotConfiguredBanner();
   }
-}
-
-async function loadFromLocal() {
-  try {
-    const resp = await fetch('data/partners.json?t=' + Date.now());
-    if (resp.ok) {
-      partners = await resp.json();
-    } else {
-      partners = [];
-    }
-  } catch {
-    partners = getSampleData();
-  }
-  updateNavBadge();
 }
 
 // ============================================================
@@ -285,13 +327,26 @@ async function loadFromLocal() {
 // ============================================================
 async function saveToGitHub(message = 'Update partners') {
   if (!githubConfig.token || !githubConfig.owner || !githubConfig.repo) {
-    showToast('⚠️ GitHub not configured — data will be lost on refresh. Press Ctrl+Shift+G to connect.', 'warning');
+    showToast('⚠️ GitHub not configured. Press Ctrl+Shift+G to connect.', 'warning');
+    showNotConfiguredBanner();
     return false;
   }
 
   showLoading('Saving to GitHub...');
   try {
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(partners, null, 2))));
+    // Always get fresh SHA before saving to avoid 409 conflicts
+    if (!fileSha) {
+      const check = await ghFetch(
+        `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data/partners.json?ref=${githubConfig.branch}`
+      );
+      if (check.ok) {
+        const checkData = await check.json();
+        fileSha = checkData.sha;
+      }
+    }
+
+    const raw = JSON.stringify(partners, null, 2);
+    const content = btoa(unescape(encodeURIComponent(raw)));
     const body = { message, content, branch: githubConfig.branch };
     if (fileSha) body.sha = fileSha;
 
@@ -312,23 +367,24 @@ async function saveToGitHub(message = 'Update partners') {
       const data = await resp.json();
       fileSha = data.content.sha;
       hideLoading();
-      setSyncStatus('connected', 'Saved ✓');
+      setSyncStatus('connected', `Saved · ${partners.length} partners`);
       return true;
+
+    } else if (resp.status === 409) {
+      // SHA stale — fetch fresh SHA and retry once
+      hideLoading();
+      fileSha = null;
+      return await saveToGitHub(message);
+
     } else {
-      const err = await resp.json();
-      if (resp.status === 409) {
-        // SHA conflict — re-fetch and retry once
-        hideLoading();
-        showToast('⚠️ Sync conflict detected, retrying...', 'warning');
-        await loadFromGitHub();
-        return await saveToGitHub(message);
-      }
+      const err = await resp.json().catch(() => ({}));
       throw new Error(err.message || `HTTP ${resp.status}`);
     }
+
   } catch (e) {
     hideLoading();
     setSyncStatus('error', 'Save failed');
-    showToast(`❌ Failed to save: ${e.message}`, 'error');
+    showToast(`❌ Save failed: ${e.message}`, 'error');
     return false;
   }
 }
