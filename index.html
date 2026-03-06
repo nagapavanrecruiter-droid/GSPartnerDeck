@@ -351,21 +351,21 @@
       <div class="form-group">
         <label class="form-label">GitHub Token <span class="required">*</span></label>
         <input type="password" id="cfg-token" class="form-input" placeholder="ghp_xxxxxxxxxxxx" />
-        <span class="form-hint">Personal Access Token with repo write access</span>
+        <span class="form-hint">Personal Access Token with <strong>repo</strong> scope — <a href="https://github.com/settings/tokens" target="_blank" style="color:var(--accent-dark)">generate one here</a></span>
       </div>
       <div class="form-group">
         <label class="form-label">Repository Owner <span class="required">*</span></label>
-        <input type="text" id="cfg-owner" class="form-input" placeholder="your-username-or-org" />
+        <input type="text" id="cfg-owner" class="form-input" placeholder="nagapavanrecruiter-droid" />
       </div>
       <div class="form-group">
         <label class="form-label">Repository Name <span class="required">*</span></label>
-        <input type="text" id="cfg-repo" class="form-input" placeholder="partner-hub" />
+        <input type="text" id="cfg-repo" class="form-input" placeholder="GSPartnerDeck" />
       </div>
       <div class="form-group">
         <label class="form-label">Branch</label>
         <input type="text" id="cfg-branch" class="form-input" placeholder="main" value="main" />
       </div>
-      <div class="config-status" id="configStatus"></div>
+      <div class="config-status" id="configStatus" style="min-height:44px;line-height:1.6"></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('configModal')">Cancel</button>
