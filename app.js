@@ -83,7 +83,14 @@ function navigate(page) {
   // Render page-specific content
   if (page === 'dashboard') renderDashboard();
   if (page === 'analytics') renderAnalytics();
-  if (page === 'database') renderTable(partners);
+  if (page === 'database') {
+    renderTable(partners);
+    // Re-apply any active filters already in the UI
+    const q = document.getElementById('searchInput')?.value;
+    const s = document.getElementById('statusFilter')?.value;
+    const e = document.getElementById('employeeFilter')?.value;
+    if (q || s || e) filterPartners();
+  }
   if (page === 'add') clearAddForm();
 }
 
@@ -230,6 +237,7 @@ function ghFetch(url, options = {}) {
     headers: {
       Authorization: `Bearer ${githubConfig.token}`,
       Accept: 'application/vnd.github.v3+json',
+      'Cache-Control': 'no-cache',
       ...(options.headers || {})
     }
   });
@@ -284,8 +292,9 @@ async function loadFromGitHub() {
     if (resp.ok) {
       const data = await resp.json();
       fileSha = data.sha;
-      // Decode base64 content safely (handles Unicode)
-      const raw = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+      // Safe base64 → UTF-8 decode using TextDecoder (handles all Unicode/special chars)
+      const bytes = Uint8Array.from(atob(data.content.replace(/\n/g, '')), c => c.charCodeAt(0));
+      const raw = new TextDecoder('utf-8').decode(bytes);
       partners = JSON.parse(raw);
       setSyncStatus('connected', `Synced · ${partners.length} partners`);
       hideBanner();
@@ -325,7 +334,7 @@ async function loadFromGitHub() {
 // ============================================================
 // GITHUB SAVE
 // ============================================================
-async function saveToGitHub(message = 'Update partners') {
+async function saveToGitHub(message = 'Update partners', _retryCount = 0) {
   if (!githubConfig.token || !githubConfig.owner || !githubConfig.repo) {
     showToast('⚠️ GitHub not configured. Press Ctrl+Shift+G to connect.', 'warning');
     showNotConfiguredBanner();
@@ -334,19 +343,23 @@ async function saveToGitHub(message = 'Update partners') {
 
   showLoading('Saving to GitHub...');
   try {
-    // Always get fresh SHA before saving to avoid 409 conflicts
-    if (!fileSha) {
-      const check = await ghFetch(
-        `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data/partners.json?ref=${githubConfig.branch}`
-      );
-      if (check.ok) {
-        const checkData = await check.json();
-        fileSha = checkData.sha;
-      }
+    // Always fetch the latest SHA before saving to prevent 409 conflicts
+    const shaResp = await ghFetch(
+      `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data/partners.json?ref=${githubConfig.branch}`
+    );
+    if (shaResp.ok) {
+      const shaData = await shaResp.json();
+      fileSha = shaData.sha;
+    } else if (shaResp.status !== 404) {
+      throw new Error(`Could not fetch file SHA: HTTP ${shaResp.status}`);
     }
 
+    // Encode partners data to base64 safely (handles Unicode)
     const raw = JSON.stringify(partners, null, 2);
-    const content = btoa(unescape(encodeURIComponent(raw)));
+    const bytes = new TextEncoder().encode(raw);
+    const binary = Array.from(bytes).map(b => String.fromCharCode(b)).join('');
+    const content = btoa(binary);
+
     const body = { message, content, branch: githubConfig.branch };
     if (fileSha) body.sha = fileSha;
 
@@ -366,15 +379,24 @@ async function saveToGitHub(message = 'Update partners') {
     if (resp.ok) {
       const data = await resp.json();
       fileSha = data.content.sha;
-      hideLoading();
-      setSyncStatus('connected', `Saved · ${partners.length} partners`);
-      return true;
 
-    } else if (resp.status === 409) {
-      // SHA stale — fetch fresh SHA and retry once
+      // Bug fix 4: Verify the save actually landed by reading back from GitHub
+      const verified = await verifySave(data.content.sha);
+      hideLoading();
+      if (verified) {
+        setSyncStatus('connected', `Saved ✓ · ${partners.length} partners`);
+        return true;
+      } else {
+        setSyncStatus('error', 'Verify failed');
+        showToast('⚠️ Save appeared to succeed but verification failed. Please refresh.', 'warning');
+        return false;
+      }
+
+    } else if (resp.status === 409 && _retryCount < 2) {
+      // Bug fix 5: SHA conflict with retry limit (max 2 retries)
       hideLoading();
       fileSha = null;
-      return await saveToGitHub(message);
+      return await saveToGitHub(message, _retryCount + 1);
 
     } else {
       const err = await resp.json().catch(() => ({}));
@@ -387,6 +409,18 @@ async function saveToGitHub(message = 'Update partners') {
     showToast(`❌ Save failed: ${e.message}`, 'error');
     return false;
   }
+}
+
+// Bug fix 4 helper: confirm the saved SHA exists in the repo
+async function verifySave(expectedSha) {
+  try {
+    const r = await ghFetch(
+      `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data/partners.json?ref=${githubConfig.branch}&_=${Date.now()}`
+    );
+    if (!r.ok) return false;
+    const d = await r.json();
+    return d.sha === expectedSha;
+  } catch { return false; }
 }
 
 // ============================================================
@@ -428,15 +462,19 @@ async function addPartner() {
   };
 
   partners.unshift(partner);
-  const saved = await saveToGitHub(`Add partner: ${company}`);
+  let saved = false;
+  try {
+    saved = await saveToGitHub(`Add partner: ${company}`);
+  } finally {
+    hideLoading(); // Bug fix 9: always hide loader
+  }
   if (saved) {
     showToast(`✓ ${company} added successfully`, 'success');
     clearAddForm();
     renderAll();
     navigate('database');
   } else {
-    // Rollback
-    partners.shift();
+    partners.shift(); // rollback
     renderAll();
   }
 }
@@ -458,15 +496,18 @@ async function confirmDelete(id) {
   partners = partners.filter(p => p.id !== id);
   closeModal('deleteModal');
 
-  const saved = await saveToGitHub(`Delete partner: ${partner.company}`);
+  let saved = false;
+  try {
+    saved = await saveToGitHub(`Delete partner: ${partner.company}`);
+  } finally {
+    hideLoading();
+  }
   if (saved) {
     showToast(`✓ ${partner.company} deleted`, 'success');
-    renderAll();
   } else {
-    // Rollback
-    partners = oldPartners;
-    renderAll();
+    partners = oldPartners; // rollback
   }
+  renderAll();
 }
 
 function openEditModal(id) {
@@ -586,14 +627,18 @@ async function saveEdit(id) {
   };
 
   closeModal('editModal');
-  const saved = await saveToGitHub(`Update partner: ${company}`);
+  let saved = false;
+  try {
+    saved = await saveToGitHub(`Update partner: ${company}`);
+  } finally {
+    hideLoading();
+  }
   if (saved) {
     showToast(`✓ ${company} updated successfully`, 'success');
-    renderAll();
   } else {
     partners[idx] = oldPartner;
-    renderAll();
   }
+  renderAll();
 }
 
 function openViewModal(id) {
@@ -887,10 +932,20 @@ function filterPartners() {
 // CSV EXPORT
 // ============================================================
 function exportCSV() {
+  // Bug fix 7: export filtered set if filters are active, otherwise all
+  const exportData = filteredPartners.length && filteredPartners.length < partners.length
+    ? filteredPartners
+    : partners;
+
+  if (!exportData.length) {
+    showToast('⚠️ No partners to export', 'warning');
+    return;
+  }
+
   const headers = ['Employee', 'Company', 'Contact', 'Email', 'Technologies', 'Status', 'Added',
     'Overview', 'Core Competencies', 'Services', 'Industries', 'Differentiators', 'Past Performance', 'Certifications'];
 
-  const rows = partners.map(p => {
+  const rows = exportData.map(p => {
     const cap = p.capabilityStatement || {};
     return [
       p.employee, p.company, p.contact, p.email,
