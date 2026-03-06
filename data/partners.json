@@ -245,18 +245,30 @@
     "contact": "Pavan",
     "email": "pavanc@gensigma.com",
     "technologies": [
-      "Staffing"
+      "StaffingArtificial Intelligence (AI)",
+      "Cloud Computing",
+      "Data Analytics",
+      "Machine Learning"
     ],
     "status": "Active",
     "createdAt": "2026-03-06",
     "capabilityStatement": {
-      "overview": "",
-      "coreCompetencies": [],
-      "services": [],
-      "industries": "",
-      "differentiators": "",
-      "pastPerformance": "",
-      "certifications": ""
+      "overview": "GenSigma LLC is a technology services and workforce solutions provider founded in 2015 and headquartered in San Francisco, California. The company delivers AI-driven technology services, data and cloud solutions, and IT staffing support to government agencies and commercial organizations. GenSigma focuses on helping organizations modernize systems, leverage data for decision-making, and build scalable technology teams.",
+      "coreCompetencies": [
+        "Artificial intelligence and machine learning solutions for automation and predictive analytics",
+        "Cloud infrastructure and digital modernization services",
+        "Data analytics and data architecture modernization",
+        "IT staffing and workforce augmentation for government and commercial organizations"
+      ],
+      "services": [
+        "Digital modernization and enterprise application development",
+        "Data analytics and data infrastructure modernization",
+        "IT staffing and workforce augmentation services"
+      ],
+      "industries": "Government & Public Sector, Healthcare, Energy & Industrial, Technology & Media, Commercial Enterprises",
+      "differentiators": "GenSigma combines technology consulting, AI-driven solutions, and workforce services to support digital transformation initiatives. The company emphasizes modernization of legacy systems, cloud adoption, and data-driven decision-making through integrated technology and staffing support models.",
+      "pastPerformance": "The website indicates that GenSigma provides IT services and staffing support to federal, state, city, and local government agencies, as well as commercial organizations. Specific project references or client names are not publicly disclosed.",
+      "certifications": "No certifications or compliance details are publicly listed."
     },
     "website": "https://gensigma.com/"
   }
