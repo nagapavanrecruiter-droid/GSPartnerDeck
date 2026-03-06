@@ -240,7 +240,6 @@ function ghFetch(url, options = {}) {
     headers: {
       Authorization: `Bearer ${githubConfig.token}`,
       Accept: 'application/vnd.github.v3+json',
-      'Cache-Control': 'no-cache',
       ...(options.headers || {})
     }
   });
