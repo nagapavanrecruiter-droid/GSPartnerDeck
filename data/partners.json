@@ -328,32 +328,56 @@
     "contact": "Ari Johnson",
     "email": "ajohnson@capitoltechsolutions.com",
     "technologies": [
-      "Web Development Technologies",
-      "Microsoft .NET",
-      "Cloud Applications",
-      "Data Visualization & Analytics"
+      "WordPress",
+      "PHP",
+      "HTML5",
+      "CSS3",
+      "Bootstrap",
+      "Adobe Creative Suite",
+      "Figma",
+      "Microsoft .NET Frameworks",
+      "JavaScript Frameworks (Angular",
+      "Vue.js",
+      "React)",
+      "Microsoft Power Platform",
+      "Microsoft Azure",
+      "AWS Cloud",
+      "Snowflake",
+      "Microsoft SQL Server",
+      "Oracle",
+      "SSIS",
+      "SSRS",
+      "SSAS"
     ],
-    "status": "In Discussion",
+    "status": "Active",
     "createdAt": "2026-03-06",
     "capabilityStatement": {
-      "overview": "Capitol Tech Solutions (CTS) is a technology consulting and digital transformation firm headquartered in Sacramento, California. The company provides software development, data science, and user experience services to businesses, nonprofit organizations, and government agencies. CTS focuses on delivering technology solutions that support digital operations, data-driven decision-making, and modern web platforms.",
+      "overview": "Capitol Tech Solutions is a Sacramento-based digital transformation firm delivering web, software, data, and marketing technology solutions for government agencies. The organization operates through three primary divisions User Experience, Software Development, and Data Science to deliver integrated digital solutions. Their services support website development, application modernization, cloud architecture, and data-driven decision support for public sector organizations.",
       "coreCompetencies": [
-        "Custom Software Application Development and System Implementation",
-        "Web and User Experience (UX) Design and Development",
-        "Data Science and Data Visualization Solutions",
-        "Application Code Review and Technical Assessment Services"
+        "Website Design and Web Development including UI/UX and ADA WCAG Compliance",
+        "Custom Web and Mobile Application Development with Cloud Architecture and API Integration",
+        "Data Science Services including ETL",
+        "Data Warehousing",
+        "and Business Intelligence Reporting",
+        "Application Modernization and Technical Assessments for legacy systems"
       ],
       "services": [
-        "Custom Software Development and Application Engineering",
-        "Data Science and Analytics Solutions",
-        "Managed IT Support and Technical Environment Monitoring"
+        "Website Design",
+        "Development",
+        "and Cybersecurity Services",
+        "Application Development and Cloud-Based Platform Engineering",
+        "Data Architecture",
+        "Data Visualization",
+        "and Business Intelligence Solutions"
       ],
-      "industries": "Technology, Healthcare, Finance, Education, Public Sector / Government",
-      "differentiators": "Capitol Tech Solutions delivers end-to-end technology services, managing the full software development lifecycle from requirements definition through implementation, testing, and maintenance. The firm combines software engineering, data analytics, and user experience design to support digital transformation initiatives for public and private sector organizations. Its engagement model emphasizes tailored technical solutions aligned to each client’s operational requirements.",
-      "pastPerformance": "Capitol Tech Solutions has supported projects involving data reporting and visualization for organizations working with the California Department of Public Health and the California Governor’s Office. The company has also delivered custom software, web development, and digital strategy solutions for organizations across nonprofit, political, and business sectors.",
-      "certifications": "Microsoft Solutions Partner - Digital & App Innovation (as referenced on company website)."
+      "industries": "State Government, Local Government, Federal Government, Education, Public Sector Programs",
+      "differentiators": "Capitol Tech Solutions operates through three specialized delivery divisions User Experience, Software Development, and Data Science that collaborate across projects to deliver integrated digital solutions. The organization provides capabilities across website development, application modernization, and data analytics while supporting government agencies with cloud architecture, ADA-compliant web solutions, and enterprise data platforms. Their service model integrates technical development, user-centered design, and data analysis to support digital transformation initiatives in the public sector.",
+      "pastPerformance": "Capitol Tech Solutions has supported digital transformation and application development initiatives for numerous government entities including the California Department of Public Health, California Department of Social Services, California Department of Industrial Relations, California Department of State Hospitals, California Governor’s Office of Emergency Services, and the Bureau of Reclamation. Projects include website development, application modernization, data architecture, COVID-19 reporting dashboards, SharePoint migration, data integration, and ADA compliance audits. Additional work has been performed for local governments such as the City of Sacramento and multiple county agencies, as well as education organizations including Sacramento County Office of Education and Sacramento City Unified School District.",
+      "certifications": "W3C HTML5 Certification, W3C CSS3 Certification, Microsoft Certified: Azure Solutions Architect Expert, Microsoft Certified: DevOps Engineer Expert, Microsoft Certified: Data Analyst Associate, Snowflake SnowPro Certification"
     },
-    "website": "https://www.capitoltechsolutions.com/"
+    "website": "https://www.capitoltechsolutions.com/",
+    "opportunity": "",
+    "eventId": ""
   },
   {
     "id": "1772807599630",
