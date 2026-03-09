@@ -366,21 +366,41 @@
     "id": "1772803452528",
     "employee": "Sai",
     "company": "Streebo",
-    "contact": "Kumar",
-    "email": "kumar@Streebo.com",
+    "contact": "Rahul Sharma",
+    "email": "rahul.sharma@streebo.com",
     "technologies": [
-      "AI"
+      "Artificial Intelligence (AI)",
+      "Machine Learning (ML)",
+      "Natural Language Processing (NLP)",
+      "AWS",
+      "Azure",
+      "IBM Cloud",
+      "Google Cloud"
     ],
-    "status": "In Discussion",
+    "status": "Submitted",
     "createdAt": "2026-03-06",
     "capabilityStatement": {
-      "overview": "",
-      "coreCompetencies": [],
-      "services": [],
-      "industries": "",
-      "differentiators": "",
-      "pastPerformance": "",
-      "certifications": ""
+      "overview": "Streebo is a Houston, Texas–based artificial intelligence and digital transformation company that provides enterprise digital solutions including AI-powered chatbots, virtual assistants, and automation technologies. The company develops conversational AI solutions designed to operate across web, mobile, and voice channels. Streebo collaborates with major technology providers such as IBM, Google, and Amazon to deliver enterprise digital solutions.",
+      "coreCompetencies": [
+        "AI-powered conversational interfaces and virtual assistants for enterprise use cases",
+        "Development and deployment of omnichannel chatbots across web",
+        "mobile",
+        "messaging",
+        "and voice platforms",
+        "Digital transformation solutions integrating AI",
+        "automation",
+        "and enterprise systems",
+        "Middleware and enterprise platform support including integration with existing enterprise software systems"
+      ],
+      "services": [
+        "Conversational AI and chatbot development",
+        "Generative AI consulting and implementation",
+        "Enterprise middleware and infrastructure services"
+      ],
+      "industries": "Banking, Insurance, Retail, Healthcare, Government",
+      "differentiators": "Pre-trained AI chatbot and virtual assistant solutions designed for enterprise use cases, enabling faster deployment through reusable components and automation. Experience integrating conversational AI with enterprise systems and multiple communication channels including web, mobile, messaging, and voice platforms. Partnership ecosystem with major technology providers such as IBM, Google, and Amazon to support enterprise AI and cloud implementations.",
+      "pastPerformance": "The website references deployments of AI-powered conversational interfaces for enterprise clients, including implementations that automate internal IT support processes and chatbot solutions for online service platforms. Specific client names are not publicly disclosed.",
+      "certifications": "IBM Gold Business Partner."
     },
     "website": "https://www.streebo.com/"
   },
