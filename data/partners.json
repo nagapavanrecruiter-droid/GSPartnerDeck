@@ -1,5 +1,41 @@
 [
   {
+    "id": "1773089367495",
+    "employee": "Pavan",
+    "company": "iT Services 2 (iT2)",
+    "contact": "Parker McGrew",
+    "email": "pmcgrew@itservices2.com",
+    "website": "https://itservices2.com/",
+    "technologies": [
+      "SAP",
+      "SAP S/4HANA",
+      "SAP Cloud Platforms",
+      "ERP Systems"
+    ],
+    "status": "Submitted",
+    "opportunity": "SAP Staff Augmentation and Systems Consulting Services - Seattle Public Schools",
+    "eventId": "",
+    "createdAt": "2026-03-09",
+    "capabilityStatement": {
+      "overview": "iT Services 2 (iT2) is a Texas-based consulting firm specializing in SAP-focused technology services and advisory support. The company provides consulting, implementation, staffing, and managed services designed to help organizations implement, optimize, and manage SAP environments. iT2 operates as a boutique SAP consulting firm with experienced consultants and multiple delivery models to support client technology initiatives.",
+      "coreCompetencies": [
+        "SAP advisory and consulting services",
+        "SAP implementation and system optimization",
+        "SAP staff augmentation and recruitment of SAP consultants",
+        "Managed SAP services and project delivery support"
+      ],
+      "services": [
+        "SAP consulting and advisory",
+        "SAP staff augmentation and direct hire placement",
+        "Managed SAP services and project management"
+      ],
+      "industries": "Energy, Transportation and Logistics, Manufacturing, Retail, Consumer Goods",
+      "differentiators": "Specialized focus on SAP consulting and ERP related services supported by experienced consultants with extensive industry experience. The firm offers multiple engagement models including consulting, staff augmentation, and managed services to support SAP implementation, upgrades, migration, and ongoing optimization initiatives.",
+      "pastPerformance": "The company reports numerous SAP consulting engagements and ongoing client engagements delivering SAP advisory, implementation, and staffing support; however, specific project details and client contracts are not publicly disclosed.",
+      "certifications": "WBENC (Women’s Business Enterprise National Council) certification, WOSB (Women-Owned Small Business) certification, SAP PartnerEdge program recognition including SAP Silver Partner status and Services Track certification."
+    }
+  },
+  {
     "id": "1773087095880",
     "employee": "Pavan",
     "company": "Veraqor",
