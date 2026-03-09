@@ -1,5 +1,41 @@
 [
   {
+    "id": "1773086931593",
+    "employee": "Pavan",
+    "company": "ZEDventures, Inc",
+    "contact": "Vinod K Mudavangatil",
+    "email": "vinodm@zedventures.com",
+    "website": "zedventures.com",
+    "technologies": [
+      "Cloud Technologies",
+      "Enterprise Data & Analytics Platforms",
+      "Business Intelligence & Visualization Tools",
+      "Oracle NetSuite & Oracle Utilities"
+    ],
+    "status": "Active",
+    "createdAt": "2026-03-09",
+    "capabilityStatement": {
+      "overview": "ZEDventures, Inc. is an enterprise technology solutions and services provider focused on helping organizations modernize IT environments and leverage data for improved decision-making. The company delivers end-to-end technology solutions including cloud services, data analytics, and enterprise application support. Its services are designed to help organizations improve operational efficiency, reduce costs, and enable digital transformation initiatives.",
+      "coreCompetencies": [
+        "Enterprise technology consulting and implementation",
+        "Enterprise data analytics and business intelligence solutions",
+        "Cloud services and infrastructure enablement",
+        "Application development",
+        "modernization",
+        "and managed services"
+      ],
+      "services": [
+        "Enterprise data and analytics solutions",
+        "Cloud solutions and infrastructure services",
+        "Application development and managed application services"
+      ],
+      "industries": "High Technology, Aerospace, Chemicals, Oil and Gas, Utilities",
+      "differentiators": "ZEDventures provides end-to-end enterprise technology services covering consulting, implementation, and ongoing application management. The company emphasizes flexible engagement models including strategic staffing, co-sourcing, fixed-deliverable projects, and managed services to support varying client delivery needs. It also focuses on helping organizations derive actionable insights from enterprise data through analytics, dashboards, and reporting capabilities.",
+      "pastPerformance": "The company has supported projects involving data governance, business intelligence, and advanced analytics initiatives for organizations in industries including aerospace, chemicals, oil and gas, and high technology.",
+      "certifications": "No certifications or compliance details are publicly listed."
+    }
+  },
+  {
     "id": "1772837379625",
     "employee": "SYED SHAIKSHAVALI",
     "company": "NIX United",
