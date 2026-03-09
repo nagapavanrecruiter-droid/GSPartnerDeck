@@ -457,6 +457,8 @@ async function addPartner() {
     website: document.getElementById('f-website').value.trim(),
     technologies,
     status,
+    opportunity: document.getElementById('f-opportunity').value.trim(),
+    eventId:     document.getElementById('f-eventId').value.trim(),
     createdAt: new Date().toISOString().split('T')[0],
     capabilityStatement: {
       overview: document.getElementById('f-overview').value.trim(),
@@ -567,6 +569,18 @@ function openEditModal(id) {
     </div>
 
     <div class="edit-form-section">
+      <div class="edit-section-label">Opportunity Details</div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">Opportunity Submitted / Reach Out To</label>
+        <input type="text" id="e-opportunity" class="form-input" value="${esc(partner.opportunity || '')}" placeholder="e.g. DoD Cloud Modernization RFP" />
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">Sourcing Event ID</label>
+        <input type="text" id="e-eventId" class="form-input" value="${esc(partner.eventId || '')}" placeholder="e.g. EVT-2024-0042" />
+      </div>
+    </div>
+
+    <div class="edit-form-section">
       <div class="edit-section-label">Capability Statement</div>
       <div class="form-group" style="margin-bottom:12px">
         <label class="form-label">Company Overview</label>
@@ -628,6 +642,8 @@ async function saveEdit(id) {
     email: document.getElementById('e-email').value.trim(),
     website: document.getElementById('e-website').value.trim(),
     technologies,
+    opportunity: document.getElementById('e-opportunity').value.trim(),
+    eventId:     document.getElementById('e-eventId').value.trim(),
     capabilityStatement: {
       overview: document.getElementById('e-overview').value.trim(),
       coreCompetencies: competencies,
@@ -689,6 +705,15 @@ function openViewModal(id) {
         <div class="detail-field"><div class="detail-field-label">Added On</div><div class="detail-field-value">${formatDate(partner.createdAt)}</div></div>
       </div>
     </div>
+
+    ${(partner.opportunity || partner.eventId) ? `
+    <div class="detail-section">
+      <div class="detail-section-title">Opportunity Details</div>
+      <div class="detail-grid">
+        ${partner.opportunity ? `<div class="detail-field" style="grid-column:1/-1"><div class="detail-field-label">Opportunity Submitted / Reach Out To</div><div class="detail-field-value">${esc(partner.opportunity)}</div></div>` : ''}
+        ${partner.eventId ? `<div class="detail-field"><div class="detail-field-label">Sourcing Event ID</div><div class="detail-field-value"><code style="background:rgba(0,212,170,0.12);color:#00d4aa;padding:3px 10px;border-radius:6px;font-size:0.82rem;letter-spacing:0.03em">${esc(partner.eventId)}</code></div></div>` : ''}
+      </div>
+    </div>` : ''}
 
     <div class="detail-section">
       <div class="detail-section-title">Technologies</div>
@@ -931,6 +956,7 @@ function filterPartners() {
     const cap = p.capabilityStatement || {};
     const searchFields = [
       p.company, p.employee, p.contact, p.email,
+      p.opportunity, p.eventId,
       ...(p.technologies || []),
       cap.overview, cap.industries, cap.differentiators,
       cap.pastPerformance, cap.certifications,
@@ -961,7 +987,7 @@ function exportCSV() {
     return;
   }
 
-  const headers = ['Employee', 'Company', 'Contact', 'Email', 'Website', 'Technologies', 'Status', 'Added',
+  const headers = ['Employee', 'Company', 'Contact', 'Email', 'Website', 'Technologies', 'Opportunity', 'Event ID', 'Status', 'Added',
     'Overview', 'Core Competencies', 'Services', 'Industries', 'Differentiators', 'Past Performance', 'Certifications'];
 
   const rows = exportData.map(p => {
@@ -969,6 +995,7 @@ function exportCSV() {
     return [
       p.employee, p.company, p.contact, p.email, p.website || '',
       (p.technologies || []).join('; '),
+      p.opportunity || '', p.eventId || '',
       p.status, p.createdAt,
       cap.overview, (cap.coreCompetencies || []).join('; '),
       (cap.services || []).join('; '),
@@ -1030,6 +1057,7 @@ function animateNumber(id, target) {
 
 function clearAddForm() {
   ['f-employee','f-company','f-contact','f-email','f-website','f-technologies',
+   'f-opportunity','f-eventId',
    'f-overview','f-competencies','f-services','f-industries',
    'f-differentiators','f-pastPerformance','f-certifications'].forEach(id => {
     const el = document.getElementById(id);
