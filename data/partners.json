@@ -1,5 +1,39 @@
 [
   {
+    "id": "1773247538191",
+    "employee": "Pavan",
+    "company": "INE, Inc",
+    "contact": "Bryson Blaylock",
+    "email": "bblaylock@ine.com",
+    "website": "https://ine.com/",
+    "technologies": [
+      "Cybersecurity",
+      "Networking Technologies",
+      "Cloud Technologies",
+      "Data Science"
+    ],
+    "status": "Submitted",
+    "createdAt": "2026-03-11",
+    "capabilityStatement": {
+      "overview": "INE, Inc. is a provider of online technical training focused on IT disciplines such as cybersecurity, networking, cloud technologies, and data science. Founded in 2003, the company delivers a digital learning platform that combines expert-led instruction with practical, hands-on labs and skill assessments to support workforce development and professional certification preparation.",
+      "coreCompetencies": [
+        "Online technical training and workforce upskilling in IT disciplines",
+        "Hands-on lab-based training environments for practical skill development",
+        "Certification preparation and validation programs for cybersecurity and networking roles",
+        "Skill assessment and structured learning paths for technical professionals"
+      ],
+      "services": [
+        "On-demand IT training and virtual instruction",
+        "Hands-on technical labs and skill assessment tools",
+        "Professional certification preparation and training programs"
+      ],
+      "industries": "Information Technology, Cybersecurity, Cloud Computing, Data Science, Professional Workforce Development",
+      "differentiators": "INE delivers a hands-on learning model that integrates instructor-led content with practical labs and scenario-based exercises designed to replicate real-world IT environments. Its platform provides structured learning paths, skill assessments, and certification preparation to support continuous technical training for individuals and enterprise teams. The platform is designed to enable scalable training delivery through an online subscription model accessible globally.",
+      "pastPerformance": "The company’s training solutions are used by organizations and IT professionals globally; however, detailed project-level past performance information is not publicly disclosed on the company website.",
+      "certifications": "INE offers proprietary technical certifications such as the eJPT (Junior Penetration Tester) certification through its training platform."
+    }
+  },
+  {
     "id": "1773089367495",
     "employee": "Pavan",
     "company": "iT Services 2 (iT2)",
