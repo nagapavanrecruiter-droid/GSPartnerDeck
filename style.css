@@ -321,11 +321,11 @@ body {
   transform: translate(20px, -20px);
 }
 
-.stat-total::before { background: var(--blue); }
-.stat-active::before { background: var(--green); }
-.stat-discussion::before { background: var(--amber); }
-.stat-submitted::before { background: var(--purple); }
-.stat-nq::before { background: var(--red); }
+.stat-total::before    { background: var(--blue); }
+.stat-pipeline::before { background: #10b981; }
+.stat-dc::before       { background: #6366f1; }
+.stat-won::before      { background: #16a34a; }
+.stat-lost::before     { background: var(--red); }
 
 .stat-card:hover {
   transform: translateY(-2px);
@@ -338,11 +338,11 @@ body {
   display: flex; align-items: center; justify-content: center;
 }
 
-.stat-total .stat-icon { background: var(--blue-light); color: var(--blue); }
-.stat-active .stat-icon { background: var(--green-light); color: var(--green); }
-.stat-discussion .stat-icon { background: var(--amber-light); color: var(--amber); }
-.stat-submitted .stat-icon { background: var(--purple-light); color: var(--purple); }
-.stat-nq .stat-icon { background: var(--red-light); color: var(--red); }
+.stat-total    .stat-icon { background: var(--blue-light);   color: var(--blue);   }
+.stat-pipeline .stat-icon { background: #d1fae5;            color: #10b981;        }
+.stat-dc       .stat-icon { background: #eef2ff;            color: #6366f1;        }
+.stat-won      .stat-icon { background: #dcfce7;            color: #16a34a;        }
+.stat-lost     .stat-icon { background: var(--red-light);   color: var(--red);     }
 
 .stat-content { flex: 1; }
 
@@ -685,14 +685,32 @@ body {
   flex-shrink: 0;
 }
 
-.status-Active { background: var(--green-light); color: #059669; }
-.status-Active::before { background: #059669; }
-.status-In-Discussion { background: var(--amber-light); color: #d97706; }
-.status-In-Discussion::before { background: #d97706; }
-.status-Submitted { background: var(--purple-light); color: #7c3aed; }
-.status-Submitted::before { background: #7c3aed; }
-.status-Not-Qualified { background: var(--red-light); color: #dc2626; }
-.status-Not-Qualified::before { background: #dc2626; }
+/* ── Onboarding  (partner entered after positive call) ── */
+.status-Call-Completed       { background:#fff7ed; color:#ea580c; font-weight:600; }
+.status-Call-Completed::before { background:#f97316; }
+/* ── */
+.status-NDA-Sent             { background:#f5f3ff; color:#7c3aed; }
+.status-NDA-Sent::before     { background:#8b5cf6; }
+.status-NDA-Signed           { background:#ede9fe; color:#6d28d9; }
+.status-NDA-Signed::before   { background:#7c3aed; }
+.status-DC-Sent              { background:#eef2ff; color:#4f46e5; }
+.status-DC-Sent::before      { background:#6366f1; }
+.status-DC-Received          { background:#ecfdf5; color:#059669; font-weight:600; }
+.status-DC-Received::before  { background:#059669; }
+.status-DC-Delayed           { background:#fff1f2; color:#e11d48; }
+.status-DC-Delayed::before   { background:#ef4444; }
+/* ── Submission ── */
+.status-Submitted-to-RFP-Team { background:#fdf4ff; color:#a21caf; font-weight:600; }
+.status-Submitted-to-RFP-Team::before { background:#c026d3; }
+.status-Proposal-Submitted   { background:#eef2ff; color:#3730a3; font-weight:600; }
+.status-Proposal-Submitted::before { background:#4f46e5; }
+/* ── Outcome ── */
+.status-Contract-Won         { background:#dcfce7; color:#15803d; font-weight:700; }
+.status-Contract-Won::before { background:#16a34a; }
+.status-Contract-Lost        { background:#fef2f2; color:#dc2626; }
+.status-Contract-Lost::before { background:#dc2626; }
+.status-Future-Pipeline      { background:#f0f9ff; color:#0369a1; }
+.status-Future-Pipeline::before { background:#0284c7; }
 
 /* Action buttons */
 .action-buttons { display: flex; gap: 4px; }
