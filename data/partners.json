@@ -168,7 +168,7 @@
       "Data Science",
       "DevOps"
     ],
-    "status": "Submitted",
+    "status": "Proposal Submitted",
     "createdAt": "2026-03-06",
     "capabilityStatement": {
       "overview": "NIX United is a global software engineering company providing custom software development, IT consulting, and technology outsourcing services. Founded in 1994, the company supports organizations in designing, building, and scaling digital products through a structured offshore delivery model and multidisciplinary engineering teams. NIX delivers software solutions across multiple technology domains including AI, cloud, and enterprise platforms.",
@@ -187,7 +187,9 @@
       "differentiators": "NIX utilizes a proven offshore delivery model with globally distributed engineering teams to support scalable software development and long-term product lifecycle support. The company provides multidisciplinary technical expertise across AI, cloud, data engineering, and enterprise software platforms, enabling clients to build and maintain complex digital solutions.",
       "pastPerformance": "The company reports delivering 3,000+ software projects for global clients, including enterprise and Fortune 500 organizations across multiple industries such as healthcare and finance. Specific client names are not publicly disclosed on the website.",
       "certifications": "Microsoft Solutions Partner for Infrastructure (Azure), AWS RDS Service Delivery Partner, ISTQB Certified Software Testing Professionals"
-    }
+    },
+    "opportunities": [],
+    "bdNotes": ""
   },
   {
     "id": "1772837212561",
