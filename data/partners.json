@@ -128,7 +128,7 @@
       "Business Intelligence & Visualization Tools",
       "Oracle NetSuite & Oracle Utilities"
     ],
-    "status": "Active",
+    "status": "Future Pipeline",
     "createdAt": "2026-03-09",
     "capabilityStatement": {
       "overview": "ZEDventures, Inc. is an enterprise technology solutions and services provider focused on helping organizations modernize IT environments and leverage data for improved decision-making. The company delivers end-to-end technology solutions including cloud services, data analytics, and enterprise application support. Its services are designed to help organizations improve operational efficiency, reduce costs, and enable digital transformation initiatives.",
@@ -151,7 +151,9 @@
       "certifications": "No certifications or compliance details are publicly listed."
     },
     "opportunity": "SAP Staff Augmentation and Systems Consulting Services - Seattle Public Schools",
-    "eventId": ""
+    "eventId": "",
+    "opportunities": [],
+    "bdNotes": ""
   },
   {
     "id": "1772837379625",
