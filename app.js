@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadConfig();
   loadPartners();
   setupNavigation();
+  resetOpportunityRows('f-opp-list'); // seed first empty row on Add Partner form
   document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
 
   // Close modals on overlay click
@@ -91,7 +92,7 @@ function navigate(page) {
     const e = document.getElementById('employeeFilter')?.value;
     if (q || s || e) filterPartners();
   }
-  if (page === 'add') clearAddForm();
+  if (page === 'add') { clearAddForm(); if (!document.getElementById('f-opp-list').querySelector('.opp-row')) resetOpportunityRows('f-opp-list'); }
 }
 
 function toggleSidebar() {
@@ -457,8 +458,8 @@ async function addPartner() {
     website: document.getElementById('f-website').value.trim(),
     technologies,
     status,
-    opportunity: document.getElementById('f-opportunity').value.trim(),
-    eventId:     document.getElementById('f-eventId').value.trim(),
+    opportunities: readOpportunityRows('f-opp-list'),
+    bdNotes:      document.getElementById('f-bdNotes').value.trim(),
     createdAt: new Date().toISOString().split('T')[0],
     capabilityStatement: {
       overview: document.getElementById('f-overview').value.trim(),
@@ -570,13 +571,17 @@ function openEditModal(id) {
 
     <div class="edit-form-section">
       <div class="edit-section-label">Opportunity Details</div>
-      <div class="form-group" style="margin-bottom:12px">
-        <label class="form-label">Opportunity Submitted / Reach Out To</label>
-        <input type="text" id="e-opportunity" class="form-input" value="${esc(partner.opportunity || '')}" placeholder="e.g. DoD Cloud Modernization RFP" />
+      <div class="opp-list-header" style="margin-bottom:10px">
+        <span class="form-label" style="margin:0">Opportunities Submitted / Reached Out To</span>
+        <button type="button" class="btn-add-opp" onclick="addOpportunityRow('e-opp-list')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Opportunity
+        </button>
       </div>
-      <div class="form-group" style="margin-bottom:12px">
-        <label class="form-label">Sourcing Event ID</label>
-        <input type="text" id="e-eventId" class="form-input" value="${esc(partner.eventId || '')}" placeholder="e.g. EVT-2024-0042" />
+      <div id="e-opp-list" class="opp-list"></div>
+      <div class="form-group" style="margin-top:16px">
+        <label class="form-label">BD Owner Notes / Comments</label>
+        <textarea id="e-bdNotes" class="form-textarea" rows="3" placeholder="Notes from the BD owner...">${esc(partner.bdNotes || '')}</textarea>
       </div>
     </div>
 
@@ -615,6 +620,7 @@ function openEditModal(id) {
 
   document.getElementById('saveEditBtn').onclick = () => saveEdit(id);
   openModal('editModal');
+  populateOpportunityRows('e-opp-list', partner.opportunities || []);
 }
 
 async function saveEdit(id) {
@@ -642,8 +648,8 @@ async function saveEdit(id) {
     email: document.getElementById('e-email').value.trim(),
     website: document.getElementById('e-website').value.trim(),
     technologies,
-    opportunity: document.getElementById('e-opportunity').value.trim(),
-    eventId:     document.getElementById('e-eventId').value.trim(),
+    opportunities: readOpportunityRows('e-opp-list'),
+    bdNotes:       document.getElementById('e-bdNotes').value.trim(),
     capabilityStatement: {
       overview: document.getElementById('e-overview').value.trim(),
       coreCompetencies: competencies,
@@ -706,13 +712,25 @@ function openViewModal(id) {
       </div>
     </div>
 
-    ${(partner.opportunity || partner.eventId) ? `
+    ${((partner.opportunities && partner.opportunities.length) || partner.bdNotes) ? `
     <div class="detail-section">
       <div class="detail-section-title">Opportunity Details</div>
-      <div class="detail-grid">
-        ${partner.opportunity ? `<div class="detail-field" style="grid-column:1/-1"><div class="detail-field-label">Opportunity Submitted / Reach Out To</div><div class="detail-field-value">${esc(partner.opportunity)}</div></div>` : ''}
-        ${partner.eventId ? `<div class="detail-field"><div class="detail-field-label">Sourcing Event ID</div><div class="detail-field-value"><code style="background:rgba(0,212,170,0.12);color:#00d4aa;padding:3px 10px;border-radius:6px;font-size:0.82rem;letter-spacing:0.03em">${esc(partner.eventId)}</code></div></div>` : ''}
-      </div>
+      ${partner.opportunities && partner.opportunities.length ? `
+      <div class="opp-view-list">
+        ${partner.opportunities.map((o, i) => `
+          <div class="opp-view-row">
+            <div class="opp-view-num">${i + 1}</div>
+            <div class="opp-view-content">
+              <div class="opp-view-name">${esc(o.opportunity || '—')}</div>
+              ${o.eventId ? `<code class="opp-event-chip">${esc(o.eventId)}</code>` : ''}
+            </div>
+          </div>`).join('')}
+      </div>` : ''}
+      ${partner.bdNotes ? `
+      <div class="cap-section" style="margin-top:14px">
+        <div class="cap-label">BD Owner Notes</div>
+        <div class="cap-value" style="white-space:pre-wrap">${esc(partner.bdNotes)}</div>
+      </div>` : ''}
     </div>` : ''}
 
     <div class="detail-section">
@@ -956,7 +974,8 @@ function filterPartners() {
     const cap = p.capabilityStatement || {};
     const searchFields = [
       p.company, p.employee, p.contact, p.email,
-      p.opportunity, p.eventId,
+      ...(p.opportunities || []).flatMap(o => [o.opportunity, o.eventId]),
+      p.bdNotes,
       ...(p.technologies || []),
       cap.overview, cap.industries, cap.differentiators,
       cap.pastPerformance, cap.certifications,
@@ -987,7 +1006,7 @@ function exportCSV() {
     return;
   }
 
-  const headers = ['Employee', 'Company', 'Contact', 'Email', 'Website', 'Technologies', 'Opportunity', 'Event ID', 'Status', 'Added',
+  const headers = ['Employee', 'Company', 'Contact', 'Email', 'Website', 'Technologies', 'Opportunities', 'BD Notes', 'Status', 'Added',
     'Overview', 'Core Competencies', 'Services', 'Industries', 'Differentiators', 'Past Performance', 'Certifications'];
 
   const rows = exportData.map(p => {
@@ -995,7 +1014,8 @@ function exportCSV() {
     return [
       p.employee, p.company, p.contact, p.email, p.website || '',
       (p.technologies || []).join('; '),
-      p.opportunity || '', p.eventId || '',
+      (p.opportunities || []).map(o => `${o.opportunity}${o.eventId ? ' ['+o.eventId+']' : ''}`).join('; '),
+      p.bdNotes || '',
       p.status, p.createdAt,
       cap.overview, (cap.coreCompetencies || []).join('; '),
       (cap.services || []).join('; '),
@@ -1057,7 +1077,7 @@ function animateNumber(id, target) {
 
 function clearAddForm() {
   ['f-employee','f-company','f-contact','f-email','f-website','f-technologies',
-   'f-opportunity','f-eventId',
+   'f-bdNotes',
    'f-overview','f-competencies','f-services','f-industries',
    'f-differentiators','f-pastPerformance','f-certifications'].forEach(id => {
     const el = document.getElementById(id);
@@ -1065,6 +1085,7 @@ function clearAddForm() {
   });
   const status = document.getElementById('f-status');
   if (status) status.value = '';
+  resetOpportunityRows('f-opp-list');
 }
 
 // ============================================================
@@ -1125,6 +1146,74 @@ function setSyncStatus(state, text) {
   if (state === 'error') dot.classList.add('error');
   if (state === 'warning') dot.classList.add('warning');
   textEl.textContent = text;
+}
+
+
+// ============================================================
+// OPPORTUNITY ROWS — dynamic multi-entry helpers
+// ============================================================
+function oppRowHTML(idx, opp, evtId) {
+  return `
+    <div class="opp-row" data-idx="${idx}">
+      <div class="opp-row-num">${idx + 1}</div>
+      <input type="text" class="form-input opp-input-name" placeholder="Opportunity name / RFP title" value="${esc(opp || '')}" />
+      <input type="text" class="form-input opp-input-id" placeholder="Event ID (e.g. EVT-2024-0042)" value="${esc(evtId || '')}" style="max-width:200px" />
+      <button type="button" class="opp-remove-btn" onclick="removeOpportunityRow(this)" title="Remove">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>`;
+}
+
+function addOpportunityRow(listId, opp = '', evtId = '') {
+  const list = document.getElementById(listId);
+  const idx  = list.querySelectorAll('.opp-row').length;
+  list.insertAdjacentHTML('beforeend', oppRowHTML(idx, opp, evtId));
+  renumberOppRows(list);
+}
+
+function removeOpportunityRow(btn) {
+  const row  = btn.closest('.opp-row');
+  const list = row.closest('.opp-list');
+  row.remove();
+  renumberOppRows(list);
+  // Always keep at least one empty row
+  if (!list.querySelectorAll('.opp-row').length) addOpportunityRow(list.id);
+}
+
+function renumberOppRows(list) {
+  list.querySelectorAll('.opp-row').forEach((row, i) => {
+    row.setAttribute('data-idx', i);
+    row.querySelector('.opp-row-num').textContent = i + 1;
+  });
+}
+
+function readOpportunityRows(listId) {
+  const list = document.getElementById(listId);
+  if (!list) return [];
+  return Array.from(list.querySelectorAll('.opp-row'))
+    .map(row => ({
+      opportunity: row.querySelector('.opp-input-name').value.trim(),
+      eventId:     row.querySelector('.opp-input-id').value.trim()
+    }))
+    .filter(o => o.opportunity || o.eventId);
+}
+
+function populateOpportunityRows(listId, opps) {
+  const list = document.getElementById(listId);
+  if (!list) return;
+  list.innerHTML = '';
+  if (!opps || !opps.length) {
+    addOpportunityRow(listId);
+    return;
+  }
+  opps.forEach((o, i) => addOpportunityRow(listId, o.opportunity, o.eventId));
+}
+
+function resetOpportunityRows(listId) {
+  const list = document.getElementById(listId);
+  if (!list) return;
+  list.innerHTML = '';
+  addOpportunityRow(listId);
 }
 
 // ============================================================
