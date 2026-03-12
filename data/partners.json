@@ -204,7 +204,7 @@
       "Content Management Systems (CMS)",
       "Cloud Hosting & DevOps"
     ],
-    "status": "Submitted",
+    "status": "Contract Won",
     "createdAt": "2026-03-06",
     "capabilityStatement": {
       "overview": "Wakefly, Inc. is a U.S.-based digital experience and web development firm providing website design, development, digital marketing, and hosting services. Founded in 2002, the company supports organizations in building and managing modern web platforms that improve online presence, user experience, and lead generation. Wakefly delivers end-to-end services covering website strategy, development, digital marketing, and ongoing site support.",
@@ -227,7 +227,9 @@
       "differentiators": "Wakefly provides integrated web development and digital marketing services, supporting organizations from initial website design through deployment and ongoing operational support. The firm combines development, marketing strategy, and cloud hosting capabilities to deliver scalable websites and digital platforms aligned with business objectives.",
       "pastPerformance": "The company website references projects involving website design, CMS implementation, upgrades, and digital experience improvements for organizations such as Gogo, ECHO, National Association of Independent Colleges and Universities (NAICU), Health Plans, Inc., HarborOne Bank, and Atlas Van Lines.",
       "certifications": "Kentico Gold Partner and Kentico Quality Expert partner status are referenced on the website."
-    }
+    },
+    "opportunities": [],
+    "bdNotes": ""
   },
   {
     "id": "1772835455433",
