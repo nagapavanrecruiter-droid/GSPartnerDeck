@@ -12,7 +12,7 @@
       "Cloud Technologies",
       "Data Science"
     ],
-    "status": "Submitted",
+    "status": "Proposal Submitted",
     "createdAt": "2026-03-11",
     "capabilityStatement": {
       "overview": "INE, Inc. is a provider of online technical training focused on IT disciplines such as cybersecurity, networking, cloud technologies, and data science. Founded in 2003, the company delivers a digital learning platform that combines expert-led instruction with practical, hands-on labs and skill assessments to support workforce development and professional certification preparation.",
@@ -33,7 +33,9 @@
       "certifications": "INE offers proprietary technical certifications such as the eJPT (Junior Penetration Tester) certification through its training platform."
     },
     "opportunity": "AI and Cybersecurity Planning, Training and Exercise - CCSF",
-    "eventId": "0000011278"
+    "eventId": "0000011278",
+    "opportunities": [],
+    "bdNotes": ""
   },
   {
     "id": "1773089367495",
