@@ -88,7 +88,7 @@
       "Cloud Computing",
       "Data Analytics"
     ],
-    "status": "Submitted",
+    "status": "Proposal Submitted",
     "createdAt": "2026-03-09",
     "capabilityStatement": {
       "overview": "Veraqor, Inc. is a technology consulting firm focused on digital transformation through cloud, data, and artificial intelligence solutions. The company provides consulting and implementation services that help organizations design, build, and manage data-driven platforms and intelligent applications. Veraqor supports enterprises in modernizing technology environments and leveraging analytics and AI to improve operational decision-making.",
@@ -111,7 +111,9 @@
       "differentiators": "Veraqor focuses on integrating cloud, data, and AI technologies to support enterprise digital transformation initiatives. The company operates with a Data and AI Center of Excellence model to guide strategy, governance, and implementation of intelligent data platforms. Veraqor delivers consulting, development, and operational support services designed to help organizations operationalize data and AI solutions across business functions.",
       "pastPerformance": "Examples of solution implementations referenced on the website include AI, data, and cloud-based technology solutions associated with organizations such as ASOS, Migros, PepsiCo, Shell, Airbus, and GE Aviation. These examples describe technology use cases involving machine learning models, predictive analytics, and digital transformation initiatives.",
       "certifications": "No certifications or compliance details are publicly listed."
-    }
+    },
+    "opportunities": [],
+    "bdNotes": ""
   },
   {
     "id": "1773086931593",
