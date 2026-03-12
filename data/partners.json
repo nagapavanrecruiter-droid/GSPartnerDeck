@@ -452,7 +452,7 @@
       "Cybersecurity",
       "Contact Center / Customer Experience Platforms"
     ],
-    "status": "Submitted",
+    "status": "Proposal Submitted",
     "createdAt": "2026-03-06",
     "capabilityStatement": {
       "overview": "D3Clarity, Inc. is a professional services firm providing consulting and implementation services focused on data, cloud, and artificial intelligence solutions. The company supports organizations in modernizing data infrastructure, improving data governance and integration, and implementing cloud and AI capabilities to enable data-driven decision making and operational efficiency.",
@@ -480,7 +480,9 @@
       "pastPerformance": "The company website references project work involving enterprise data management and analytics initiatives, including:\n\nData management and equipment data relationship solutions for a global energy company\n\nData-driven analytics initiatives supporting Texas education services\n\nVendor onboarding and data management solutions for organizations in the oil and gas sector",
       "certifications": "The website references an AWS Migration Competency status and notes that the company has renewed a SOC 2 Type II audit."
     },
-    "website": "https://d3clarity.com/"
+    "website": "https://d3clarity.com/",
+    "opportunities": [],
+    "bdNotes": ""
   },
   {
     "id": "1772803452528",
