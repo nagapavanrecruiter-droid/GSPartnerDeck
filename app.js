@@ -39,7 +39,7 @@ function buildStatusOptions(selectedValue = '') {
   WORKFLOW_STATUSES.forEach(s => {
     if (s.group !== currentGroup) {
       if (currentGroup) html += '</optgroup>';
-      html += `<optgroup label="── ${s.group}">`;
+      html += `<optgroup label=" ${s.group}">`;
       currentGroup = s.group;
     }
     html += `<option value="${s.value}" ${selectedValue === s.value ? 'selected' : ''}>${s.value}</option>`;
