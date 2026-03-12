@@ -6,6 +6,50 @@
 'use strict';
 
 // ============================================================
+// WORKFLOW STATUSES — single source of truth
+// ============================================================
+const WORKFLOW_STATUSES = [
+  // Onboarding  (partner entered after positive call)
+  { value: 'Call Completed',        group: 'Onboarding'  },
+  { value: 'NDA Sent',              group: 'Onboarding'  },
+  { value: 'NDA Signed',            group: 'Onboarding'  },
+  { value: 'DC Sent',               group: 'Onboarding'  },
+  { value: 'DC Received',           group: 'Onboarding'  },
+  { value: 'DC Delayed',            group: 'Onboarding'  },
+  // Submission
+  { value: 'Submitted to RFP Team', group: 'Submission'  },
+  { value: 'Proposal Submitted',    group: 'Submission'  },
+  // Outcome
+  { value: 'Contract Won',          group: 'Outcome'     },
+  { value: 'Contract Lost',         group: 'Outcome'     },
+  { value: 'Future Pipeline',       group: 'Outcome'     },
+];
+
+// Statuses that count as "Active Pipeline" for the dashboard card
+const PIPELINE_STATUSES = new Set([
+  'Call Completed',
+  'NDA Sent','NDA Signed','DC Sent','DC Delayed','DC Received',
+  'Submitted to RFP Team','Proposal Submitted'
+]);
+
+// Build a grouped <select> options string from WORKFLOW_STATUSES
+function buildStatusOptions(selectedValue = '') {
+  let html = '<option value="">Select status...</option>';
+  let currentGroup = '';
+  WORKFLOW_STATUSES.forEach(s => {
+    if (s.group !== currentGroup) {
+      if (currentGroup) html += '</optgroup>';
+      html += `<optgroup label="── ${s.group}">`;
+      currentGroup = s.group;
+    }
+    html += `<option value="${s.value}" ${selectedValue === s.value ? 'selected' : ''}>${s.value}</option>`;
+  });
+  if (currentGroup) html += '</optgroup>';
+  return html;
+}
+
+
+// ============================================================
 // STATE
 // ============================================================
 let partners = [];
@@ -560,10 +604,7 @@ function openEditModal(id) {
         <div class="form-group">
           <label class="form-label">Partner Status <span class="required">*</span></label>
           <select id="e-status" class="form-input form-select">
-            <option value="Active" ${partner.status === 'Active' ? 'selected' : ''}>Active</option>
-            <option value="In Discussion" ${partner.status === 'In Discussion' ? 'selected' : ''}>In Discussion</option>
-            <option value="Submitted" ${partner.status === 'Submitted' ? 'selected' : ''}>Submitted</option>
-            <option value="Not Qualified" ${partner.status === 'Not Qualified' ? 'selected' : ''}>Not Qualified</option>
+            ${buildStatusOptions(partner.status)}
           </select>
         </div>
       </div>
@@ -785,11 +826,12 @@ function updateNavBadge() {
 
 function renderDashboard() {
   const counts = getStatusCounts();
-  animateNumber('stat-total', partners.length);
-  animateNumber('stat-active', counts['Active'] || 0);
-  animateNumber('stat-discussion', counts['In Discussion'] || 0);
-  animateNumber('stat-submitted', counts['Submitted'] || 0);
-  animateNumber('stat-nq', counts['Not Qualified'] || 0);
+  const pipelineCount = partners.filter(p => PIPELINE_STATUSES.has(p.status)).length;
+  animateNumber('stat-total',    partners.length);
+  animateNumber('stat-pipeline', pipelineCount);
+  animateNumber('stat-dc',       counts['DC Received'] || 0);
+  animateNumber('stat-won',      counts['Contract Won'] || 0);
+  animateNumber('stat-lost',     counts['Contract Lost'] || 0);
 
   renderRecentPartners();
   renderTopTechnologies();
@@ -878,10 +920,17 @@ function renderEmployeeAnalytics() {
 function renderStatusBreakdown() {
   const counts = getStatusCounts();
   const statuses = [
-    { key: 'Active', bg: 'var(--green-light)', color: '#059669' },
-    { key: 'In Discussion', bg: 'var(--amber-light)', color: '#d97706' },
-    { key: 'Submitted', bg: 'var(--purple-light)', color: '#7c3aed' },
-    { key: 'Not Qualified', bg: 'var(--red-light)', color: '#dc2626' }
+    { key: 'Call Completed',        color: '#f97316', bg: '#fff7ed' },
+    { key: 'NDA Sent',              color: '#8b5cf6', bg: '#f5f3ff' },
+    { key: 'NDA Signed',            color: '#7c3aed', bg: '#ede9fe' },
+    { key: 'DC Sent',               color: '#6366f1', bg: '#eef2ff' },
+    { key: 'DC Received',           color: '#059669', bg: '#ecfdf5' },
+    { key: 'DC Delayed',            color: '#ef4444', bg: '#fef2f2' },
+    { key: 'Submitted to RFP Team', color: '#a21caf', bg: '#fdf4ff' },
+    { key: 'Proposal Submitted',    color: '#4f46e5', bg: '#eef2ff' },
+    { key: 'Contract Won',          color: '#16a34a', bg: '#dcfce7' },
+    { key: 'Contract Lost',         color: '#dc2626', bg: '#fef2f2' },
+    { key: 'Future Pipeline',       color: '#0369a1', bg: '#f0f9ff' },
   ];
 
   document.getElementById('statusBreakdown').innerHTML = statuses.map(s => `
