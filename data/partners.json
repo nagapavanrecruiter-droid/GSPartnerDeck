@@ -238,7 +238,7 @@
       "Enterprise Applications",
       "Web & Mobile Development"
     ],
-    "status": "Submitted",
+    "status": "Proposal Submitted",
     "createdAt": "2026-03-06",
     "capabilityStatement": {
       "overview": "Apolis is a global IT consultancy that provides technology consulting, managed services, and IT staffing solutions. The company integrates technology specialists and enterprise solutions into client organizations to support technology implementation, operations, and workforce needs. Apolis delivers services across enterprise applications, cloud platforms, and digital development environments.",
@@ -257,7 +257,9 @@
       "differentiators": "Provides a combined model of IT consulting, enterprise application services, and IT workforce solutions to support both technology delivery and staffing requirements.\nOperates with a global delivery model and a network of consultants supporting enterprise technology implementations and managed services.",
       "pastPerformance": "The company website references engagements with organizations including 3M, Nestlé, Qualcomm, Toyota, Toyota Financial Services, Bank of the West, Boingo, Kyocera, Toshiba Medical Systems, Carvana, Evite, and Miramax.",
       "certifications": "No certifications or compliance details are publicly listed."
-    }
+    },
+    "opportunities": [],
+    "bdNotes": ""
   },
   {
     "id": "1772834667612",
