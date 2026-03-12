@@ -405,7 +405,7 @@
       "SSRS",
       "SSAS"
     ],
-    "status": "Active",
+    "status": "Future Pipeline",
     "createdAt": "2026-03-06",
     "capabilityStatement": {
       "overview": "Capitol Tech Solutions is a Sacramento-based digital transformation firm delivering web, software, data, and marketing technology solutions for government agencies. The organization operates through three primary divisions User Experience, Software Development, and Data Science to deliver integrated digital solutions. Their services support website development, application modernization, cloud architecture, and data-driven decision support for public sector organizations.",
@@ -433,7 +433,9 @@
     },
     "website": "https://www.capitoltechsolutions.com/",
     "opportunity": "",
-    "eventId": ""
+    "eventId": "",
+    "opportunities": [],
+    "bdNotes": ""
   },
   {
     "id": "1772807599630",
