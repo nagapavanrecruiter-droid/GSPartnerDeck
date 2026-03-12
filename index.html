@@ -44,6 +44,7 @@
   </nav>
 
   <div class="sidebar-footer">
+    <div class="sidebar-credit">Designed by <span>Pavan Kumar</span></div>
     <div class="github-config-btn hidden" id="configBtn">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
       GitHub Config
@@ -333,13 +334,21 @@
             </div>
             Opportunity Details
           </div>
-          <div class="form-group full-width">
-            <label class="form-label">Opportunity Submitted / Reach Out To</label>
-            <input type="text" id="f-opportunity" class="form-input" placeholder="e.g. DoD Cloud Modernization RFP, VA Healthcare IT Opportunity" />
+
+          <div class="opp-list-header">
+            <span class="form-label" style="margin:0">Opportunities Submitted / Reached Out To</span>
+            <button type="button" class="btn-add-opp" onclick="addOpportunityRow('f-opp-list')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Opportunity
+            </button>
           </div>
-          <div class="form-group full-width">
-            <label class="form-label">Sourcing Event ID</label>
-            <input type="text" id="f-eventId" class="form-input" placeholder="e.g. EVT-2024-0042" />
+          <div id="f-opp-list" class="opp-list">
+            <!-- rows injected by JS -->
+          </div>
+
+          <div class="form-group full-width" style="margin-top:18px">
+            <label class="form-label">BD Owner Notes / Comments</label>
+            <textarea id="f-bdNotes" class="form-textarea" rows="3" placeholder="Notes from the BD owner — context, relationship history, next steps..."></textarea>
           </div>
         </div>
 
