@@ -50,7 +50,7 @@
       "SAP Cloud Platforms",
       "ERP Systems"
     ],
-    "status": "Submitted",
+    "status": "Proposal Submitted",
     "opportunity": "SAP Staff Augmentation and Systems Consulting Services - Seattle Public Schools",
     "eventId": "",
     "createdAt": "2026-03-09",
@@ -71,7 +71,9 @@
       "differentiators": "Specialized focus on SAP consulting and ERP related services supported by experienced consultants with extensive industry experience. The firm offers multiple engagement models including consulting, staff augmentation, and managed services to support SAP implementation, upgrades, migration, and ongoing optimization initiatives.",
       "pastPerformance": "The company reports numerous SAP consulting engagements and ongoing client engagements delivering SAP advisory, implementation, and staffing support; however, specific project details and client contracts are not publicly disclosed.",
       "certifications": "WBENC (Women’s Business Enterprise National Council) certification, WOSB (Women-Owned Small Business) certification, SAP PartnerEdge program recognition including SAP Silver Partner status and Services Track certification."
-    }
+    },
+    "opportunities": [],
+    "bdNotes": ""
   },
   {
     "id": "1773087095880",
