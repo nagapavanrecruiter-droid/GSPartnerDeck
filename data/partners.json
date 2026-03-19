@@ -1,5 +1,41 @@
 [
   {
+    "id": "1773936545775",
+    "employee": "Hanu",
+    "company": "Biz-Metric Partners Inc",
+    "contact": "Darrell Seybold",
+    "email": "darrell.seybold@bizmetric.com",
+    "website": "https://www.bizmetric.com/",
+    "technologies": [
+      "Microsoft Azure",
+      "SQL Server",
+      "Power BI",
+      ".NET"
+    ],
+    "status": "Future Pipeline",
+    "opportunities": [],
+    "bdNotes": "",
+    "createdAt": "2026-03-19",
+    "capabilityStatement": {
+      "overview": "Biz-Metric Partners Inc is a technology consulting firm specializing in data analytics, business intelligence, and application development solutions. The company focuses on helping organizations improve decision-making through data-driven insights and scalable technology implementations. Their core value lies in aligning business objectives with data and analytics strategies to deliver measurable outcomes.",
+      "coreCompetencies": [
+        "Data Analytics and Business Intelligence Solutions",
+        "Data Warehousing and Data Integration",
+        "Custom Application Development",
+        "Cloud-Based Data Solutions"
+      ],
+      "services": [
+        "Business Intelligence and Reporting",
+        "Data Engineering and ETL Development",
+        "Application Development and System Integration"
+      ],
+      "industries": "Healthcare, Financial Services, Retail, Manufacturing, Technology",
+      "differentiators": "Focus on data-driven decision support through structured analytics solutions. Experience in integrating disparate data sources into unified reporting environments. Combination of application development and analytics capabilities under a single delivery model. Emphasis on scalable, cloud-aligned data solutions",
+      "pastPerformance": "Past performance details are not publicly disclosed.",
+      "certifications": "No certifications or compliance details are publicly listed."
+    }
+  },
+  {
     "id": "1773247538191",
     "employee": "Pavan",
     "company": "INE, Inc",
