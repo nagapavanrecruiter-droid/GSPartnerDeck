@@ -1,5 +1,24 @@
 [
   {
+    "id": "1787074640489",
+    "employee": "Pavan",
+    "company": "GenSigma",
+    "contact": "Kumar",
+    "email": "kumar@gensigma.com",
+    "technologies": [],
+    "status": "Active",
+    "createdAt": "2026-08-18",
+    "capabilityStatement": {
+      "overview": "",
+      "coreCompetencies": [],
+      "services": [],
+      "industries": "",
+      "differentiators": "",
+      "pastPerformance": "",
+      "certifications": ""
+    }
+  },
+  {
     "id": "1774371938320",
     "employee": "Pavan",
     "company": "Gensigma",
